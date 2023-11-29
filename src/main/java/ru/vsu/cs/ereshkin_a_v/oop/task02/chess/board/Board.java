@@ -9,14 +9,24 @@ import java.util.List;
 
 public interface Board {
 	List<Coordinate> getPiecesCoordinatesForColor(PieceColor color);
+
 	Coordinate getKingLocation(PieceColor color);
+
 	void setPiece(Coordinate coordinate, ChessPiece piece);
+
 	ChessPiece getPiece(Coordinate coordinate);
+
 	PieceColor getPieceColor(Coordinate coordinate);
+
 	Tile getTile(Coordinate coordinate);
+
 	boolean playMove(Coordinate from, Coordinate to, Runnable endTurn);
+
 	boolean isValidMove(Coordinate from, Coordinate to, boolean hypothetical);
+
 	boolean isFinished();
+
 	void setCurrentPlayer(PieceColor newPlayer);
+
 	void print();
 }

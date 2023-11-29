@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Knight extends ChessPiece {
-	public Knight(PieceColor color){
+	public Knight(PieceColor color) {
 		super(PieceType.Knight, color, validMoves(), false);
 	}
 
 
-	private static List<Move> validMoves(){
+	private static List<Move> validMoves() {
 		List<Move> result = new ArrayList<>();
 
 		result.add(new Move(2, 1, false, false));

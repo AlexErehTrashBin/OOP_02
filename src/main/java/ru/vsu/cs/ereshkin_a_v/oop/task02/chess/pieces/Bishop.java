@@ -7,6 +7,9 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.PieceColor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Слон
+ * */
 public class Bishop extends ChessPiece {
 	public Bishop(PieceColor color) {
 		super(PieceType.Bishop, color, validMoves(), true);

@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends ChessPiece {
-	public Pawn(PieceColor color){
+	public Pawn(PieceColor color) {
 		super(PieceType.Pawn, color, validMoves(color), false);
 	}
 
-	private static List<Move> validMoves(PieceColor color){
-		if (color == PieceColor.Black){
+	private static List<Move> validMoves(PieceColor color) {
+		// TODO Добавить логику чтобы можно было походить и после первого хода кикаить из списка доступных ходова вариант с похождением на две клетки
+		if (color == PieceColor.BLACK) {
 			List<Move> result = new ArrayList<>();
 			result.add(new Move(0, 1, false, false));
 			result.add(new Move(0, 2, true, false));
