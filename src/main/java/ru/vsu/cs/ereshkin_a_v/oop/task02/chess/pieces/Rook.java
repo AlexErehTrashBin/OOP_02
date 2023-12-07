@@ -25,4 +25,9 @@ public class Rook extends ChessPiece {
 		result.add(new Move(0, -1, false, false));
 		return result;
 	}
+
+	@Override
+	public char getCharValue() {
+		return getColor() == PieceColor.BLACK ? '♜' : '♖';
+	}
 }

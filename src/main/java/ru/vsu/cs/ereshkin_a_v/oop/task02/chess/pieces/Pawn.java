@@ -13,7 +13,7 @@ public class Pawn extends ChessPiece {
 	}
 
 	private static List<Move> validMoves(PieceColor color) {
-		// TODO Добавить логику чтобы можно было походить и после первого хода кикаить из списка доступных ходова вариант с похождением на две клетки
+		// TODO Добавить логику чтобы можно было походить и после первого хода кикать из списка доступных ходов вариант с похождением на две клетки
 		if (color == PieceColor.BLACK) {
 			List<Move> result = new ArrayList<>();
 			result.add(new Move(0, 1, false, false));
@@ -29,5 +29,10 @@ public class Pawn extends ChessPiece {
 			result.add(new Move(-1, -1, false, true));
 			return result;
 		}
+	}
+
+	@Override
+	public char getCharValue() {
+		return getColor() == PieceColor.BLACK ? '♟' : '♙';
 	}
 }

@@ -1,23 +1,34 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess;
 
-// TODO Добавить ссылки на соседние тайлы (список)
-// TODO Определить тайл с помощью строкового ключа
+import java.util.ArrayList;
+import java.util.List;
 
-// TODO Получать необходимы фигуре тайлы с помощью методов получения списка, пробегаться по тайлам.
-
-// TODO Имеет смысл сделать не список, а мапу, ключ -
-// Enum где значение верхняя диагональная, верхняя левая диагональная,
-// и тогда в Tile делать мапу где 8 пар ключ-значение,
-// где ключи - названия енамов, значение - ссылка на экземпляр клетки.
-
-// Буквально
-
-public class Tile implements Comparable<Tile>{
+public class Tile {
+	public static final int UP = 0;
+	public static final int RIGHT_UP = 1;
+	public static final int RIGHT = 2;
+	public static final int RIGHT_DOWN = 3;
+	public static final int DOWN = 4;
+	public static final int LEFT_DOWN = 5;
+	public static final int LEFT = 6;
+	public static final int LEFT_UP = 7;
+	public static final int DIRECTIONS_COUNT = 8;
 	private ChessPiece piece;
 	private final Coordinate coordinate;
+	private final List<Tile> neighbors;
+
+	public List<Tile> getNeighborsUnsafe() {
+		return neighbors;
+	}
 
 	public Tile(Coordinate coordinate) {
+		neighbors = new ArrayList<>();
 		this.coordinate = coordinate;
+	}
+
+	public void setNeighbors(List<Tile> neighbors) {
+		this.neighbors.clear();
+		this.neighbors.addAll(neighbors);
 	}
 
 	public ChessPiece getPiece() {
@@ -30,7 +41,7 @@ public class Tile implements Comparable<Tile>{
 
 	public String getValue() {
 		if (piece != null) return "[" + piece.getCharValue() + "]";
-		return "[ ]";
+		return "[　]";
 	}
 
 	public Coordinate getCoordinate() {
@@ -43,18 +54,5 @@ public class Tile implements Comparable<Tile>{
 
 	public void empty() {
 		piece = null;
-	}
-
-	@Override
-	public int compareTo(Tile o) {
-		if (o.coordinate.getY() < coordinate.getY()) return -1;
-		if (o.coordinate.getY() > coordinate.getY()) return 1;
-		if (o.coordinate.getX() < coordinate.getX()) return -1;
-		if (o.coordinate.getX() > coordinate.getX()) return 1;
-		return 0;
-	}
-
-	public enum TileColor {
-		White, Black
 	}
 }

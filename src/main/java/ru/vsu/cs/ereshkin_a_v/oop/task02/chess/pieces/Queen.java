@@ -25,4 +25,9 @@ public class Queen extends ChessPiece {
 		result.add(new Move(-1, -1, false, false));
 		return result;
 	}
+
+	@Override
+	public char getCharValue() {
+		return getColor() == PieceColor.BLACK ? '♛' : '♕';
+	}
 }

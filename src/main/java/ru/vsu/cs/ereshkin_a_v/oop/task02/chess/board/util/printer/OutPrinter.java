@@ -1,9 +1,16 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.printer;
 
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Coordinate;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Tile;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.Board;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.finder.TileFinder;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.finder.TileFinderImpl;
 
 public class OutPrinter implements BoardPrinter {
+	private final TileFinder tileFinder;
+	public OutPrinter(Board board) {
+		this.tileFinder = new TileFinderImpl(board);
+	}
 	/**
 	 * Universal console clear for both Windows and Unix machines.
 	 */
@@ -26,12 +33,13 @@ public class OutPrinter implements BoardPrinter {
 	public void print(Board board) {
 		clearConsole();
 		System.out.println();
-		System.out.println("      [A][B][C][D][E][F][G][H] \n");
+		System.out.println("      [  A  ][ B ][  C  ][  D  ][  E  ][  F  ][G][H] \n");
 		for (int i = 0; i < 8; i++) {
 			System.out.print("[" + (8 - i) + "]   ");
 
 			for (int j = 0; j < 8; j++) {
-				System.out.print(board.getTile(new Coordinate(j, i)).getValue());
+				Tile tile = tileFinder.getTile(new Coordinate(j, i));
+				System.out.print(tile.getValue());
 			}
 
 			System.out.println("   [" + (8 - i) + "]");

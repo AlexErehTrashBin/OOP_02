@@ -20,7 +20,3 @@ public class Move {
 		this.onTakeOnly = onTakeOnly;
 	}
 }
-
-// TODO enum Direction
-// TODO subenum AdditionalDirection : Direction
-// TODO validMoves -> List<enum>

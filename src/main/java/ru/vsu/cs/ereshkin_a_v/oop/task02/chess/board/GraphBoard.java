@@ -1,45 +1,134 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board;
 
-import com.google.common.graph.*;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Tile;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.filler.PieceFiller;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.printer.BoardPrinter;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.filler.UpperHalfBlackFiller;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.finder.TileFinder;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.finder.TileFinderImpl;
 
-@SuppressWarnings("UnstableApiUsage")
-public class GraphBoard extends AbstractBoard implements Board {
-	private Graph<Tile> board;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GraphBoard implements Board {
+	private static final int SIZE = 8;
+	private final TileFinder tileFinder;
+	protected PieceColor currentPlayer;
+	protected boolean isFinished;
+	private Tile upperLeftTile;
 	public static final int GRAPH_NODES = 64;
 	public static final int GRAPH_EDGES = 112;
-	public GraphBoard(PieceFiller filler, BoardPrinter printer, PieceColor startPlayer) {
-		super(startPlayer, printer);
-		initializeBoard();
-		filler.fill(this);
-	}
-
-	private void initializeBoard() {
-		ImmutableGraph.Builder<Tile> graph = GraphBuilder
-				.undirected()
-				.expectedNodeCount(GRAPH_NODES)
-				.allowsSelfLoops(false)
-				.nodeOrder(ElementOrder.sorted(Tile::compareTo))
-				.immutable();
-
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
-				graph.addNode(new Tile(new Coordinate(j, i)));
-			}
-		}
-
-		board = graph.build();
+	public GraphBoard(PieceColor startPlayer) {
+		this.currentPlayer = startPlayer;
+		this.isFinished = false;
+		this.tileFinder = new TileFinderImpl(this);
+		initializeBoard(SIZE);
+		new UpperHalfBlackFiller(this).fill();
 	}
 
 	@Override
-	public Tile getTile(Coordinate coordinate) {
-		for (Tile tile : board.nodes()) {
-			if (tile.getCoordinate().equals(coordinate)) return tile;
+	public void setCurrentPlayer(PieceColor newPlayer) {
+		currentPlayer = newPlayer;
+	}
+
+	@Override
+	public PieceColor getCurrentPlayer() {
+		return currentPlayer;
+	}
+
+	@Override
+	public boolean isFinished() {
+		return isFinished;
+	}
+
+	@Override
+	public void setFinished(boolean finished) {
+		isFinished = finished;
+	}
+
+	private void initializeBoard(int size) {
+		Tile[][] board = new Tile[size][size];
+
+		// Создание тайлов и установка координат
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				Coordinate coordinate = new Coordinate(col, row);
+				board[row][col] = new Tile(coordinate);
+			}
 		}
-		return null;
+
+		// Установка ссылок между тайлами
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				Tile tile = board[row][col];
+				List<Tile> neighbors = new ArrayList<>(Tile.DIRECTIONS_COUNT);
+
+				// Установка ссылки вверх
+				if (row > 0) {
+					neighbors.add(board[row - 1][col]);
+				} else {
+					neighbors.add(null);
+				}
+
+				// Установка ссылки вверх-вправо
+				if (row > 0 && col < size - 1) {
+					neighbors.add(board[row - 1][col + 1]);
+				} else {
+					neighbors.add(null);
+				}
+
+				// Установка ссылки вправо
+				if (col < size - 1) {
+					neighbors.add(board[row][col + 1]);
+				} else {
+					neighbors.add(null);
+				}
+
+				// Установка ссылки вниз-вправо
+				if (row < size - 1 && col < size - 1) {
+					neighbors.add(board[row + 1][col + 1]);
+				} else {
+					neighbors.add(null);
+				}
+
+				// Установка ссылки вниз
+				if (row < size - 1) {
+					neighbors.add(board[row + 1][col]);
+				} else {
+					neighbors.add(null);
+				}
+
+				// Установка ссылки вниз-влево
+				if (row < size - 1 && col > 0) {
+					neighbors.add(board[row + 1][col - 1]);
+				} else {
+					neighbors.add(null);
+				}
+
+				// Установка ссылки налево
+				if (col > 0) {
+					neighbors.add(board[row][col - 1]);
+				} else {
+					neighbors.add(null);
+				}
+
+				// Установка ссылки вверх-влево
+				if (row > 0 && col > 0) {
+					neighbors.add(board[row - 1][col - 1]);
+				} else {
+					neighbors.add(null);
+				}
+
+				// Установка списка соседей для текущего тайла
+				tile.setNeighbors(neighbors);
+			}
+		}
+
+		upperLeftTile = board[0][0];
+	}
+
+	@Override
+	public Tile getUpperLeftTile() {
+		return upperLeftTile;
 	}
 }

@@ -32,4 +32,9 @@ public class Knight extends ChessPiece {
 
 		return result;
 	}
+
+	@Override
+	public char getCharValue() {
+		return getColor() == PieceColor.BLACK ? '♞' : '♘';
+	}
 }

@@ -3,10 +3,6 @@ package ru.vsu.cs.ereshkin_a_v.oop.task02;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.ChessGame;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.PieceColor;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.filler.PieceFiller;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.filler.UpperHalfBlackFiller;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.printer.BoardPrinter;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.printer.OutPrinter;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.console.InputHandler;
 
 import java.util.Scanner;
@@ -16,10 +12,8 @@ public class Main {
 		InputHandler handler = new InputHandler();
 		Scanner scanner = new Scanner(System.in);
 
-		PieceFiller filler = new UpperHalfBlackFiller();
-		BoardPrinter printer = new OutPrinter();
 		PieceColor startPlayer = PieceColor.BLACK;
-		ChessGame game = new ChessGame(filler, printer, startPlayer);
+		ChessGame game = new ChessGame(startPlayer);
 		game.printCurrentState();
 		while (!game.isFinished()) {
 			System.out.print("Введите ход (например. A2-A3): ");

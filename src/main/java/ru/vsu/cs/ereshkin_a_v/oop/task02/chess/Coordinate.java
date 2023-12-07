@@ -40,4 +40,12 @@ public class Coordinate implements Cloneable {
 	public int hashCode() {
 		return Objects.hash(getX(), getY());
 	}
+
+	@Override
+	public String toString() {
+		return "Coordinate{" +
+				"x=" + x +
+				", y=" + y +
+				'}';
+	}
 }
