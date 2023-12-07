@@ -1,5 +1,7 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess;
 
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.pieces.Piece;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,7 @@ public class Tile {
 	public static final int LEFT = 6;
 	public static final int LEFT_UP = 7;
 	public static final int DIRECTIONS_COUNT = 8;
-	private ChessPiece piece;
+	private Piece piece;
 	private final Coordinate coordinate;
 	private final List<Tile> neighbors;
 
@@ -31,11 +33,11 @@ public class Tile {
 		this.neighbors.addAll(neighbors);
 	}
 
-	public ChessPiece getPiece() {
+	public Piece getPiece() {
 		return this.piece;
 	}
 
-	public void setPiece(ChessPiece piece) {
+	public void setPiece(Piece piece) {
 		this.piece = piece;
 	}
 

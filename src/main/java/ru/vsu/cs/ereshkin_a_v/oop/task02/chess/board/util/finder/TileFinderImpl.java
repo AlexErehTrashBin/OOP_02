@@ -1,17 +1,17 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.finder;
 
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.ChessPiece;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Tile;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.Board;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.pieces.AbstractPiece;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.pieces.King;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.pieces.Piece;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TileFinderImpl implements TileFinder {
-
 	private final Board board;
 	public TileFinderImpl(Board board) {
 		this.board = board;
@@ -82,12 +82,12 @@ public class TileFinderImpl implements TileFinder {
 	}
 
 	@Override
-	public ChessPiece getPiece(Coordinate coordinate) {
+	public Piece getPiece(Coordinate coordinate) {
 		return getTile(coordinate).getPiece();
 	}
 
 	@Override
-	public void setPiece(Coordinate coordinate, ChessPiece piece) {
+	public void setPiece(Coordinate coordinate, AbstractPiece piece) {
 		getTile(coordinate).setPiece(piece);
 	}
 
@@ -99,7 +99,7 @@ public class TileFinderImpl implements TileFinder {
 				if (getTile(new Coordinate(x, y)).isEmpty()) continue;
 
 				Coordinate coordinate = new Coordinate(x, y);
-				ChessPiece piece = getPiece(coordinate);
+				Piece piece = getPiece(coordinate);
 				if (piece.getColor() == color && piece instanceof King) {
 					location = new Coordinate(x, y);
 				}
@@ -119,6 +119,6 @@ public class TileFinderImpl implements TileFinder {
 				}
 			}
 		}
-		return null;
+		return locations;
 	}
 }

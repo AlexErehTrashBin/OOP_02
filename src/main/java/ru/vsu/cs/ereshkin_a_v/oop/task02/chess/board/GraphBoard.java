@@ -16,6 +16,7 @@ public class GraphBoard implements Board {
 	protected PieceColor currentPlayer;
 	protected boolean isFinished;
 	private Tile upperLeftTile;
+	private int size;
 	public static final int GRAPH_NODES = 64;
 	public static final int GRAPH_EDGES = 112;
 	public GraphBoard(PieceColor startPlayer) {
@@ -23,6 +24,15 @@ public class GraphBoard implements Board {
 		this.isFinished = false;
 		this.tileFinder = new TileFinderImpl(this);
 		initializeBoard(SIZE);
+		new UpperHalfBlackFiller(this).fill();
+	}
+
+	public GraphBoard(PieceColor startPlayer, int size) {
+		this.size = size;
+		this.currentPlayer = startPlayer;
+		this.isFinished = false;
+		this.tileFinder = new TileFinderImpl(this);
+		initializeBoard(size);
 		new UpperHalfBlackFiller(this).fill();
 	}
 
@@ -130,5 +140,10 @@ public class GraphBoard implements Board {
 	@Override
 	public Tile getUpperLeftTile() {
 		return upperLeftTile;
+	}
+
+	@Override
+	public int getSize() {
+		return size;
 	}
 }

@@ -27,7 +27,6 @@ public class ChessGame {
 	 * @return returns true if move was played, false if move was illegal
 	 */
 	public boolean playMove(Coordinate from, Coordinate to) {
-
 		return moveManager.playMove(from, to, this::endTurn);
 	}
 

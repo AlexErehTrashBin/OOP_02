@@ -5,7 +5,7 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Tile;
 
 public interface Board {
 	Tile getUpperLeftTile();
-
+	int getSize();
 
 	boolean isFinished();
 

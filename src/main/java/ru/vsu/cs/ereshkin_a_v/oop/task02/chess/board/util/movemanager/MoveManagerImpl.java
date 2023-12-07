@@ -1,8 +1,13 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.movemanager;
 
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.*;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Coordinate;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.MoveVariant;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.PieceColor;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Tile;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.Board;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.board.util.finder.TileFinder;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.pieces.Piece;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.pieces.PieceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +22,24 @@ public class MoveManagerImpl implements MoveManager {
 
 	@Override
 	public boolean playMove(Coordinate from, Coordinate to, Runnable endTurn) {
-		return false;
+		if (!isValidMove(from, to, false)) return false;
+		Tile fromTile = tileFinder.getTile(from);
+		Piece pieceToMove = fromTile.getPiece();
+
+		Tile toTile = tileFinder.getTile(to);
+		toTile.setPiece(pieceToMove);
+
+		fromTile.empty();
+		endTurn.run();
+		return true;
 	}
 
 	@Override
 	public boolean isValidMove(Coordinate from, Coordinate to, boolean hypothetical) {
 		Tile fromTile = tileFinder.getTile(from);
 		Tile toTile = tileFinder.getTile(to);
-		ChessPiece fromPiece = fromTile.getPiece();
-		ChessPiece toPiece = toTile.getPiece();
+		Piece fromPiece = fromTile.getPiece();
+		Piece toPiece = toTile.getPiece();
 
 		if (fromPiece == null) return false;
 
@@ -48,7 +62,7 @@ public class MoveManagerImpl implements MoveManager {
 		}
 
 		//if mate, finish game
-		if (isColorCheckMate(ChessPiece.opponent(board.getCurrentPlayer())))
+		if (isColorCheckMate(board.getCurrentPlayer().getOpponent()))
 			board.setFinished(true);
 
 		//revert temporary move
@@ -59,19 +73,31 @@ public class MoveManagerImpl implements MoveManager {
 	}
 
 	private boolean isValidMoveForPieceNonRepeatable(Coordinate from, Coordinate to) {
-		ChessPiece fromPiece = tileFinder.getPiece(from);
-		List<Move> validMoves = fromPiece.getMoves();
+		Piece fromPiece = tileFinder.getPiece(from);
+		List<MoveVariant> validMoves = fromPiece.getMoves();
 		Tile toTile = tileFinder.getTile(to);
 
 		int xMove = to.getX() - from.getX();
 		int yMove = to.getY() - from.getY();
 
-		for (Move move : validMoves) {
+		for (MoveVariant move : validMoves) {
 			if (!(move.x == xMove && move.y == yMove)) continue;
-			if (move.firstMoveOnly) return toTile.isEmpty() && isFirstMoveForPawn(from);
+			// Если пешка
+			if (fromPiece.getPieceType() == PieceType.Pawn) {
+				// Если ход на 2 клетки у пешки
+				if ((Math.abs(move.x) == 0 && Math.abs(move.y) == 2)) {
+					return toTile.isEmpty() && isFirstMoveForPawn(from);
+				} else {
+					/// Ход на 1 клетку
+					if (!move.onTakeOnly) return toTile.isEmpty();
+					if (toTile.isEmpty()) return false;
+					Piece toPiece = toTile.getPiece();
+					return fromPiece.getColor() != toPiece.getColor();
+				}
+			}
 			if (!move.onTakeOnly) return toTile.isEmpty();
 			if (toTile.isEmpty()) return false;
-			ChessPiece toPiece = toTile.getPiece();
+			Piece toPiece = toTile.getPiece();
 			return fromPiece.getColor() != toPiece.getColor();
 		}
 		return false;
@@ -84,7 +110,9 @@ public class MoveManagerImpl implements MoveManager {
 	 */
 	protected boolean isFirstMoveForPawn(Coordinate from) {
 		Tile tile = tileFinder.getTile(from);
-		if (tile.isEmpty() || tile.getPiece().getPieceType() != ChessPiece.PieceType.Pawn) return false;
+		if (tile.isEmpty() || tile.getPiece().getPieceType() != PieceType.Pawn) {
+			return false;
+		}
 		PieceColor color = tile.getPiece().getColor();
 		return (color == PieceColor.WHITE) ? from.getY() == 6 : from.getY() == 1;
 	}
@@ -95,7 +123,7 @@ public class MoveManagerImpl implements MoveManager {
 	}
 
 	private boolean canOpponentTakeLocation(Coordinate location, PieceColor color) {
-		PieceColor opponentColor = ChessPiece.opponent(color);
+		PieceColor opponentColor = color.getOpponent();
 		List<Coordinate> piecesLocation = tileFinder.getPiecesCoordinatesForColor(opponentColor);
 
 		for (Coordinate fromCoordinate : piecesLocation) {
@@ -105,7 +133,8 @@ public class MoveManagerImpl implements MoveManager {
 	}
 
 	protected boolean isColorCheckMate(PieceColor color) {
-		if (!isKingCheck(color)) return false;//if not check, then we're not mate
+		if (!isKingCheck(color)) return false;
+		// If not check, then we're not mate
 		return !isCheckPreventable(color);
 	}
 
@@ -115,12 +144,12 @@ public class MoveManagerImpl implements MoveManager {
 
 		for (Coordinate location : locations) {
 			Tile fromTile = tileFinder.getTile(location);
-			ChessPiece piece = fromTile.getPiece();
+			Piece piece = fromTile.getPiece();
 			List<Coordinate> possibleMoves = validMovesForPiece(piece, location);
 
 			for (Coordinate newLocation : possibleMoves) {
 				Tile toTile = tileFinder.getTile(newLocation);
-				ChessPiece toPiece = toTile.getPiece();
+				Piece toPiece = toTile.getPiece();
 
 				//temporarily play the move to see if it makes us check
 				toTile.setPiece(piece);
@@ -143,17 +172,17 @@ public class MoveManagerImpl implements MoveManager {
 		return canPreventCheck;
 	}
 
-	protected List<Coordinate> validMovesForPiece(ChessPiece piece, Coordinate currentLocation) {
+	protected List<Coordinate> validMovesForPiece(Piece piece, Coordinate currentLocation) {
 		return piece.hasRepeatableMoves()
 				? validMovesRepeatable(piece, currentLocation)
 				: validMovesNonRepeatable(piece, currentLocation);
 	}
 
-	protected List<Coordinate> validMovesRepeatable(ChessPiece piece, Coordinate currentLocation) {
-		List<Move> moves = piece.getMoves();
+	protected List<Coordinate> validMovesRepeatable(Piece piece, Coordinate currentLocation) {
+		List<MoveVariant> moves = piece.getMoves();
 		List<Coordinate> possibleMoves = new ArrayList<>();
 
-		for (Move move : moves) {
+		for (MoveVariant move : moves) {
 			for (int i = 1; i < 7; i++) {
 				int newX = currentLocation.getX() + move.x * i;
 				int newY = currentLocation.getY() + move.y * i;
@@ -173,11 +202,11 @@ public class MoveManagerImpl implements MoveManager {
 		return possibleMoves;
 	}
 
-	protected List<Coordinate> validMovesNonRepeatable(ChessPiece piece, Coordinate currentLocation) {
-		List<Move> moves = piece.getMoves();
+	protected List<Coordinate> validMovesNonRepeatable(Piece piece, Coordinate currentLocation) {
+		List<MoveVariant> moves = piece.getMoves();
 		List<Coordinate> possibleMoves = new ArrayList<>();
 
-		for (Move move : moves) {
+		for (MoveVariant move : moves) {
 			int currentX = currentLocation.getX();
 			int currentY = currentLocation.getY();
 			int newX = currentX + move.x;
@@ -191,7 +220,7 @@ public class MoveManagerImpl implements MoveManager {
 
 
 	protected boolean isValidMoveForPiece(Coordinate from, Coordinate to) {
-		ChessPiece fromPiece = tileFinder.getPiece(from);
+		Piece fromPiece = tileFinder.getPiece(from);
 		boolean repeatableMoves = fromPiece.hasRepeatableMoves();
 
 		return repeatableMoves
@@ -200,14 +229,14 @@ public class MoveManagerImpl implements MoveManager {
 	}
 
 	protected boolean isValidMoveForPieceRepeatable(Coordinate from, Coordinate to) {
-		ChessPiece fromPiece = tileFinder.getPiece(from);
-		List<Move> validMoves = fromPiece.getMoves();
+		Piece fromPiece = tileFinder.getPiece(from);
+		List<MoveVariant> validMoves = fromPiece.getMoves();
 
 		int xMove = to.getX() - from.getX();
 		int yMove = to.getY() - from.getY();
 
 		for (int i = 1; i <= 7; i++) {
-			for (Move move : validMoves) {
+			for (MoveVariant move : validMoves) {
 
 				//generally check for possible move
 				if (!(move.x * i == xMove && move.y * i == yMove)) continue;

@@ -33,7 +33,7 @@ public class OutPrinter implements BoardPrinter {
 	public void print(Board board) {
 		clearConsole();
 		System.out.println();
-		System.out.println("      [  A  ][ B ][  C  ][  D  ][  E  ][  F  ][G][H] \n");
+		System.out.println("      [  A  ][ B ][  C  ][  D  ][  E  ][  F  ][  G  ][  H  ] \n");
 		for (int i = 0; i < 8; i++) {
 			System.out.print("[" + (8 - i) + "]   ");
 
@@ -45,6 +45,6 @@ public class OutPrinter implements BoardPrinter {
 			System.out.println("   [" + (8 - i) + "]");
 		}
 
-		System.out.println("\n      [A][B][C][D][E][F][G][H]\n");
+		System.out.println("\n      [  A  ][  B  ][  C  ][  D  ][  E  ][  F  ][  G  ][  H  ]\n");
 	}
 }

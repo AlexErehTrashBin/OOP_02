@@ -9,10 +9,13 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.pieces.*;
 
 public class UpperHalfBlackFiller implements PieceFiller {
 	private final TileFinder finder;
+	private final Board board;
 
 	public UpperHalfBlackFiller(Board board) {
+		this.board = board;
 		finder = new TileFinderImpl(board);
 	}
+
 	@Override
 	public void fill() {
 		// Добавляем пешек
@@ -21,10 +24,11 @@ public class UpperHalfBlackFiller implements PieceFiller {
 			finder.setPiece(new Coordinate(i, 6), new Pawn(PieceColor.WHITE));
 		}
 
+
 		// Добавляем ладей
 		finder.setPiece(new Coordinate(0, 0), new Rook(PieceColor.BLACK));
-		finder.setPiece(new Coordinate(0, 7), new Rook(PieceColor.BLACK));
-		finder.setPiece(new Coordinate(7, 0), new Rook(PieceColor.WHITE));
+		finder.setPiece(new Coordinate(0, 7), new Rook(PieceColor.WHITE));
+		finder.setPiece(new Coordinate(7, 0), new Rook(PieceColor.BLACK));
 		finder.setPiece(new Coordinate(7, 7), new Rook(PieceColor.WHITE));
 
 		// Добавляем коней
