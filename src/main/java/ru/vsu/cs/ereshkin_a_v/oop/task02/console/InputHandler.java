@@ -1,6 +1,6 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.console;
 
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Coordinate;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

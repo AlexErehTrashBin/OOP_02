@@ -1,8 +1,8 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02;
 
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.ChessGame;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.Coordinate;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.PieceColor;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller.ChessGame;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.console.InputHandler;
 
 import java.util.Scanner;
