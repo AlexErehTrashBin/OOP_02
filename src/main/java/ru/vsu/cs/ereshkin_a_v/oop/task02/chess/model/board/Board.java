@@ -5,6 +5,8 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 
 public interface Board {
 	Tile getUpperLeftTile();
+	boolean isCheck();
+	void setCheck(boolean check);
 
 	Tile getLowerLeftTile();
 

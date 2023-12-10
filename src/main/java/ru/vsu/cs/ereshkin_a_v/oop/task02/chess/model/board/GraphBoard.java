@@ -15,6 +15,7 @@ public class GraphBoard implements Board {
 	private final TileFinder tileFinder;
 	protected PieceColor currentPlayer;
 	protected boolean isFinished;
+	protected boolean isCheck;
 	private Tile upperLeftTile;
 	private Tile lowerLeftTile;
 	private Tile upperRightTile;
@@ -146,6 +147,16 @@ public class GraphBoard implements Board {
 	@Override
 	public Tile getUpperLeftTile() {
 		return upperLeftTile;
+	}
+
+	@Override
+	public boolean isCheck() {
+		return isCheck;
+	}
+
+	@Override
+	public void setCheck(boolean check) {
+		isCheck = check;
 	}
 
 	@Override

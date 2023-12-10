@@ -58,8 +58,10 @@ public class MoveManagerImpl implements MoveManager {
 		if (isKingCheck(board.getCurrentPlayer())) {//check that move doesn't put oneself in check
 			toTile.setPiece(toPiece);
 			fromTile.setPiece(fromPiece);
+
 			return false;
 		}
+
 
 		//if mate, finish game
 		if (isColorCheckMate(board.getCurrentPlayer().getOpponent()))
@@ -118,21 +120,19 @@ public class MoveManagerImpl implements MoveManager {
 	}
 
 	protected boolean isKingCheck(PieceColor kingColor) {
+		// TODO здесь проверять ход на шах
 		Coordinate kingLocation = tileFinder.getKingLocation(kingColor);
-		return canOpponentTakeLocation(kingLocation, kingColor);
-	}
-
-	private boolean canOpponentTakeLocation(Coordinate location, PieceColor color) {
-		PieceColor opponentColor = color.getOpponent();
+		PieceColor opponentColor = kingColor.getOpponent();
 		List<Coordinate> piecesLocation = tileFinder.getPiecesCoordinatesForColor(opponentColor);
 
 		for (Coordinate fromCoordinate : piecesLocation) {
-			if (isValidMove(fromCoordinate, location, true)) return true;
+			if (isValidMove(fromCoordinate, kingLocation, true)) return true;
 		}
 		return false;
 	}
 
 	protected boolean isColorCheckMate(PieceColor color) {
+
 		if (!isKingCheck(color)) return false;
 		// If not check, then we're not mate
 		return !isCheckPreventable(color);
