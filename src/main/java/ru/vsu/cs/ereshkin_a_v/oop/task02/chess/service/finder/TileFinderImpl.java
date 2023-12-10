@@ -19,11 +19,36 @@ public class TileFinderImpl implements TileFinder {
 
 	@Override
 	public Tile getTile(Coordinate coordinate) {
-		Tile leftUpperTile = board.getUpperLeftTile();
-		if (leftUpperTile.getCoordinate().equals(coordinate)) return board.getUpperLeftTile();
-		int direction = getMostAppropriateDirection(leftUpperTile.getCoordinate(), coordinate);
+		int size = board.getSize();
+		Tile fromTile = board.getUpperLeftTile();
+		if (coordinate.getX() > size/2) {
+			if (coordinate.getY() > size / 2) {
+				fromTile = board.getLowerRightTile();
+			}
+		}
+
+		if (coordinate.getX() > size/2) {
+			if (coordinate.getY() < size / 2) {
+				fromTile = board.getUpperRightTile();
+			}
+		}
+
+		if (coordinate.getX() < size/2) {
+			if (coordinate.getY() < size / 2) {
+				fromTile = board.getUpperLeftTile();
+			}
+		}
+
+		if (coordinate.getX() < size/2) {
+			if (coordinate.getY() > size / 2) {
+				fromTile = board.getLowerLeftTile();
+			}
+		}
+
+		if (fromTile.getCoordinate().equals(coordinate)) return board.getUpperLeftTile();
+		int direction = getMostAppropriateDirection(fromTile.getCoordinate(), coordinate);
 		if (direction == -1) return null;
-		Tile neighbourTile = getTile(coordinate, leftUpperTile.getNeighborsUnsafe().get(direction));
+		Tile neighbourTile = getTile(coordinate, fromTile.getNeighborsUnsafe().get(direction));
 		if (neighbourTile == null) return null;
 		if (neighbourTile.getCoordinate().equals(coordinate)) return neighbourTile;
 		return null;
