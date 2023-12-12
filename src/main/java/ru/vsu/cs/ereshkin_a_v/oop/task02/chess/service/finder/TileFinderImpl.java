@@ -21,6 +21,7 @@ public class TileFinderImpl implements TileFinder {
 	public Tile getTile(Coordinate coordinate) {
 		int size = board.getSize();
 		Tile fromTile = board.getUpperLeftTile();
+		if (fromTile.getCoordinate().equals(coordinate)) return fromTile;
 		if (coordinate.getX() > size/2) {
 			if (coordinate.getY() > size / 2) {
 				fromTile = board.getLowerRightTile();
@@ -45,7 +46,6 @@ public class TileFinderImpl implements TileFinder {
 			}
 		}
 
-		if (fromTile.getCoordinate().equals(coordinate)) return board.getUpperLeftTile();
 		int direction = getMostAppropriateDirection(fromTile.getCoordinate(), coordinate);
 		if (direction == -1) return null;
 		Tile neighbourTile = getTile(coordinate, fromTile.getNeighborsUnsafe().get(direction));

@@ -165,11 +165,11 @@ public class MoveManagerImpl implements MoveManager {
 				fromTile.setPiece(piece);
 				if (canPreventCheck) { // early out
 					System.out.printf("Prevented with from:" + fromTile + ", to: " + toTile);
-					return canPreventCheck;
+					return true;
 				}
 			}
 		}
-		return canPreventCheck;
+		return false;
 	}
 
 	protected List<Coordinate> validMovesForPiece(Piece piece, Coordinate currentLocation) {
