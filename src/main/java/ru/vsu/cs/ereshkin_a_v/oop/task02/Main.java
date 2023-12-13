@@ -1,39 +1,50 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02;
 
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller.ChessGame;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.console.InputHandler;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.BotPlayer;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.RealPlayer;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
+	private static GameConfig obtainConfig() {
+		Player firstPlayer = getPlayer("Первый", PieceColor.WHITE);
+		Player secondPlayer = getPlayer("Второй", PieceColor.BLACK);
+		return new GameConfig(firstPlayer, secondPlayer, getStartPlayerColor());
+	}
+	private static Player getPlayer(String playerNumber, PieceColor color) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.print(playerNumber + " игрок будет (1 - болванчик, 2 - человек): ");
+		int playerType = scanner.nextInt();
+		System.out.print("Имя игрока: ");
+		scanner.nextLine();
+		String name = scanner.nextLine();
+		if (playerType == 1) {
+			return new BotPlayer(name, color);
+		}
+		return new RealPlayer(name, color);
+	}
+	private static PieceColor getStartPlayerColor() {
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Какой игрок должен начать? (Б/Ч): ");
+		String colorString = scanner.nextLine();
+		if (Objects.equals(colorString, "Ч")) {
+			return PieceColor.BLACK;
+		}
+		return PieceColor.WHITE;
+	}
 	public static void main(String[] args) {
-		InputHandler handler = new InputHandler();
 		Scanner scanner = new Scanner(System.in);
 
-		PieceColor startPlayer = PieceColor.BLACK;
-		ChessGame game = new ChessGame(startPlayer);
+		GameConfig config = obtainConfig();
+
+		ChessGame game = new ChessGame(config.getFirstPlayer(),
+				config.getSecondPlayer(), config.getFirstPlayerColor());
 		game.printCurrentState();
-		while (!game.isFinished()) {
-			System.out.print("Введите ход (например. A2-A3): ");
-			String input = scanner.nextLine();
-
-			if (!handler.isValid(input)) {
-				System.out.println("Неверный ввод!");
-				System.out.println("Верный ввод в формате: A2-A3");
-			} else {
-				Coordinate from = handler.getFrom(input);
-				Coordinate to = handler.getTo(input);
-
-				boolean movePlayed = game.playMove(from, to);
-				if (!movePlayed)
-					System.out.println("Недопустимый ход!");
-				else {
-					game.printCurrentState();
-				}
-			}
-		}
+		game.start();
 		scanner.close();
 		System.out.println("Игра окончена!");
 	}

@@ -4,10 +4,10 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.MoveVariant;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.Pawn;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.Piece;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinder;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.moveprovider.MoveProviderFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class MoveManagerImpl implements MoveManager {
 	}
 
 	@Override
-	public boolean playMove(Coordinate from, Coordinate to, Runnable endTurn) {
+	public boolean playMove(Coordinate from, Coordinate to) {
 		if (!isValidMove(from, to, false)) return false;
 		Tile fromTile = tileFinder.getTile(from);
 		Piece pieceToMove = fromTile.getPiece();
@@ -30,7 +30,6 @@ public class MoveManagerImpl implements MoveManager {
 		toTile.setPiece(pieceToMove);
 
 		fromTile.empty();
-		endTurn.run();
 		return true;
 	}
 
@@ -74,56 +73,29 @@ public class MoveManagerImpl implements MoveManager {
 		return true;
 	}
 
-	private boolean isValidMoveForPieceNonRepeatable(Coordinate from, Coordinate to) {
-		Piece fromPiece = tileFinder.getPiece(from);
-		List<MoveVariant> validMoves = fromPiece.getMoves();
+	private boolean isValidMoveForPiece(Coordinate from, Coordinate to) {
+		Tile fromTile = tileFinder.getTile(from);
+		Piece fromPiece = fromTile.getPiece();
+		List<MoveVariant> validMoves = new MoveProviderFactory(board).create(fromTile).getAvailableMoves();
 		Tile toTile = tileFinder.getTile(to);
 
 		int xMove = to.getX() - from.getX();
 		int yMove = to.getY() - from.getY();
 
 		for (MoveVariant move : validMoves) {
-			if (!(move.x == xMove && move.y == yMove)) continue;
-			// Если пешка
-			if (fromPiece.getClass() == Pawn.class) {
-				// Если ход на 2 клетки у пешки
-				if ((Math.abs(move.x) == 0 && Math.abs(move.y) == 2)) {
-					return toTile.isEmpty() && isFirstMoveForPawn(from);
-				} else {
-					/// Ход на 1 клетку
-					if (!move.onTakeOnly) return toTile.isEmpty();
-					if (toTile.isEmpty()) return false;
-					Piece toPiece = toTile.getPiece();
-					return fromPiece.getColor() != toPiece.getColor();
-				}
-			}
-			if (!move.onTakeOnly) return toTile.isEmpty();
-			if (toTile.isEmpty()) return false;
+			if (!(move.getX() == xMove && move.getY() == yMove)) continue;
+			if (toTile.isEmpty()) return true;
 			Piece toPiece = toTile.getPiece();
 			return fromPiece.getColor() != toPiece.getColor();
 		}
 		return false;
 	}
 
-	// Determine wheter the Pawn at 'from' on 'board' has moved yet.
-
-	/**
-	 * Функция для проверки
-	 */
-	protected boolean isFirstMoveForPawn(Coordinate from) {
-		Tile tile = tileFinder.getTile(from);
-		if (tile.isEmpty() || tile.getPiece().getClass() != Pawn.class) {
-			return false;
-		}
-		PieceColor color = tile.getPiece().getColor();
-		return (color == PieceColor.WHITE) ? from.getY() == 6 : from.getY() == 1;
-	}
-
 	protected boolean isKingCheck(PieceColor kingColor) {
 		// TODO здесь проверять ход на шах
 		Coordinate kingLocation = tileFinder.getKingLocation(kingColor);
 		PieceColor opponentColor = kingColor.getOpponent();
-		List<Coordinate> piecesLocation = tileFinder.getPiecesCoordinatesForColor(opponentColor);
+		List<Coordinate> piecesLocation = tileFinder.getPiecesCoordinates(opponentColor);
 
 		for (Coordinate fromCoordinate : piecesLocation) {
 			if (isValidMove(fromCoordinate, kingLocation, true)) return true;
@@ -140,12 +112,12 @@ public class MoveManagerImpl implements MoveManager {
 
 	protected boolean isCheckPreventable(PieceColor color) {
 		boolean canPreventCheck = false;
-		List<Coordinate> locations = tileFinder.getPiecesCoordinatesForColor(color);
+		List<Coordinate> locations = tileFinder.getPiecesCoordinates(color);
 
 		for (Coordinate location : locations) {
 			Tile fromTile = tileFinder.getTile(location);
 			Piece piece = fromTile.getPiece();
-			List<Coordinate> possibleMoves = validMovesForPiece(piece, location);
+			List<Coordinate> possibleMoves = validMovesForPiece(fromTile, location);
 
 			for (Coordinate newLocation : possibleMoves) {
 				Tile toTile = tileFinder.getTile(newLocation);
@@ -172,45 +144,19 @@ public class MoveManagerImpl implements MoveManager {
 		return false;
 	}
 
-	protected List<Coordinate> validMovesForPiece(Piece piece, Coordinate currentLocation) {
-		return piece.hasRepeatableMoves()
-				? validMovesRepeatable(piece, currentLocation)
-				: validMovesNonRepeatable(piece, currentLocation);
+	protected List<Coordinate> validMovesForPiece(Tile tile, Coordinate currentLocation) {
+		return validMovesNonRepeatable(tile, currentLocation);
 	}
 
-	protected List<Coordinate> validMovesRepeatable(Piece piece, Coordinate currentLocation) {
-		List<MoveVariant> moves = piece.getMoves();
-		List<Coordinate> possibleMoves = new ArrayList<>();
-
-		for (MoveVariant move : moves) {
-			for (int i = 1; i < 7; i++) {
-				int newX = currentLocation.getX() + move.x * i;
-				int newY = currentLocation.getY() + move.y * i;
-				if (newX < 0 || newX > 7 || newY < 0 || newY > 7) break;
-
-				Coordinate toLocation = new Coordinate(newX, newY);
-				Tile tile = tileFinder.getTile(toLocation);
-				if (tile.isEmpty()) {
-					possibleMoves.add(toLocation);
-					continue;
-				}
-				if (tile.getPiece().getColor() != piece.getColor())
-					possibleMoves.add(toLocation);
-				break;
-			}
-		}
-		return possibleMoves;
-	}
-
-	protected List<Coordinate> validMovesNonRepeatable(Piece piece, Coordinate currentLocation) {
-		List<MoveVariant> moves = piece.getMoves();
+	protected List<Coordinate> validMovesNonRepeatable(Tile tile, Coordinate currentLocation) {
+		List<MoveVariant> moves = new MoveProviderFactory(board).create(tile).getAvailableMoves();
 		List<Coordinate> possibleMoves = new ArrayList<>();
 
 		for (MoveVariant move : moves) {
 			int currentX = currentLocation.getX();
 			int currentY = currentLocation.getY();
-			int newX = currentX + move.x;
-			int newY = currentY + move.y;
+			int newX = currentX + move.getX();
+			int newY = currentY + move.getY();
 			if (newX < 0 || newX > 7 || newY < 0 || newY > 7) continue;
 			Coordinate newLocation = new Coordinate(newX, newY);
 			if (isValidMoveForPiece(currentLocation, newLocation)) possibleMoves.add(newLocation);
@@ -218,46 +164,4 @@ public class MoveManagerImpl implements MoveManager {
 		return possibleMoves;
 	}
 
-
-	protected boolean isValidMoveForPiece(Coordinate from, Coordinate to) {
-		Piece fromPiece = tileFinder.getPiece(from);
-		boolean repeatableMoves = fromPiece.hasRepeatableMoves();
-
-		return repeatableMoves
-				? isValidMoveForPieceRepeatable(from, to)
-				: isValidMoveForPieceNonRepeatable(from, to);
-	}
-
-	protected boolean isValidMoveForPieceRepeatable(Coordinate from, Coordinate to) {
-		Piece fromPiece = tileFinder.getPiece(from);
-		List<MoveVariant> validMoves = fromPiece.getMoves();
-
-		int xMove = to.getX() - from.getX();
-		int yMove = to.getY() - from.getY();
-
-		for (int i = 1; i <= 7; i++) {
-			for (MoveVariant move : validMoves) {
-
-				//generally check for possible move
-				if (!(move.x * i == xMove && move.y * i == yMove)) continue;
-
-				//if move is generally valid - check if path is valid up till i
-				for (int j = 1; j <= i; j++) {
-					Tile tile = tileFinder.getTile(
-							new Coordinate(from.getX() + move.x * j, from.getY() + move.y * j));
-
-					boolean passesThroughNonEmptyTile = j != i && !tile.isEmpty();
-					if (passesThroughNonEmptyTile)
-						return false;
-
-					//if last move and toTile is empty or holds opponents piece, return true
-					if (j == i && (tile.isEmpty() || tile.getPiece().getColor() != board.getCurrentPlayer()))
-						return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	// Determine wheter the Pawn at 'from' on 'board' has moved yet.
 }

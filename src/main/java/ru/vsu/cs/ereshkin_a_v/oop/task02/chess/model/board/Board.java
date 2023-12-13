@@ -4,9 +4,19 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 
 public interface Board {
-	Tile getUpperLeftTile();
 	boolean isCheck();
+
 	void setCheck(boolean check);
+
+	boolean isFinished();
+
+	void setFinished(boolean finished);
+
+	PieceColor getCurrentPlayer();
+
+	void setCurrentPlayer(PieceColor newPlayer);
+
+	Tile getUpperLeftTile();
 
 	Tile getLowerLeftTile();
 
@@ -15,11 +25,4 @@ public interface Board {
 	Tile getLowerRightTile();
 
 	int getSize();
-
-	boolean isFinished();
-
-	void setFinished(boolean finished);
-
-	void setCurrentPlayer(PieceColor newPlayer);
-	PieceColor getCurrentPlayer();
 }

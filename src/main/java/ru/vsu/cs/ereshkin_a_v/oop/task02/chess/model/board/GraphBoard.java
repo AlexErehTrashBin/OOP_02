@@ -2,52 +2,49 @@ package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board;
 
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.UpperHalfBlackFiller;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinder;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinderImpl;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.StartBoardFiller;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GraphBoard implements Board {
 	private static final int SIZE = 8;
-	private final TileFinder tileFinder;
-	protected PieceColor currentPlayer;
-	protected boolean isFinished;
-	protected boolean isCheck;
+	private Player currentPlayer;
+	private final Player firstPlayer;
+	private final Player secondPlayer;
+
+	private boolean isFinished;
+	private boolean isCheck;
 	private Tile upperLeftTile;
 	private Tile lowerLeftTile;
 	private Tile upperRightTile;
 	private Tile lowerRightTile;
 	private int size;
-	public static final int GRAPH_NODES = 64;
-	public static final int GRAPH_EDGES = 112;
-	public GraphBoard(PieceColor startPlayer) {
-		this.currentPlayer = startPlayer;
-		this.isFinished = false;
-		this.tileFinder = new TileFinderImpl(this);
-		initializeBoard(SIZE);
-		new UpperHalfBlackFiller(this).fill();
-	}
 
-	public GraphBoard(PieceColor startPlayer, int size) {
-		this.size = size;
+	public GraphBoard(Player startPlayer, Player firstPlayer, Player secondPlayer) {
+		this.firstPlayer = firstPlayer;
+		this.secondPlayer = secondPlayer;
 		this.currentPlayer = startPlayer;
 		this.isFinished = false;
-		this.tileFinder = new TileFinderImpl(this);
-		initializeBoard(size);
-		new UpperHalfBlackFiller(this).fill();
+		initializeBoard(SIZE);
+		new StartBoardFiller(this, firstPlayer, secondPlayer, startPlayer.getColor()).fill();
 	}
 
 	@Override
 	public void setCurrentPlayer(PieceColor newPlayer) {
-		currentPlayer = newPlayer;
+		currentPlayer = getPlayerByColor(newPlayer);
+	}
+
+	private Player getPlayerByColor(PieceColor color) {
+		if (firstPlayer.getColor().equals(color)) return firstPlayer;
+		return secondPlayer;
 	}
 
 	@Override
 	public PieceColor getCurrentPlayer() {
-		return currentPlayer;
+		return currentPlayer.getColor();
 	}
 
 	@Override
@@ -138,6 +135,7 @@ public class GraphBoard implements Board {
 			}
 		}
 
+		this.size = size;
 		upperLeftTile = board[0][0];
 		lowerLeftTile = board[size - 1][0];
 		upperRightTile = board[0][size - 1];

@@ -1,14 +1,17 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece;
 
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.MoveVariant;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
-
-import java.util.List;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
 
 public interface Piece {
-	boolean hasRepeatableMoves();
+
 	char getCharValue();
+
 	PieceColor getColor();
+
 	String getName();
-	List<MoveVariant> getMoves();
+
+	Player getPlayer();
+
+	void setPlayer(Player player);
 }

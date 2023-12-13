@@ -2,11 +2,10 @@ package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder;
 
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.AbstractPiece;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.King;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.Piece;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ public class TileFinderImpl implements TileFinder {
 	public Tile getTile(Coordinate coordinate) {
 		int size = board.getSize();
 		Tile fromTile = board.getUpperLeftTile();
-		if (fromTile.getCoordinate().equals(coordinate)) return fromTile;
 		if (coordinate.getX() > size/2) {
 			if (coordinate.getY() > size / 2) {
 				fromTile = board.getLowerRightTile();
@@ -45,6 +43,7 @@ public class TileFinderImpl implements TileFinder {
 				fromTile = board.getLowerLeftTile();
 			}
 		}
+		if (fromTile.getCoordinate().equals(coordinate)) return fromTile;
 
 		int direction = getMostAppropriateDirection(fromTile.getCoordinate(), coordinate);
 		if (direction == -1) return null;
@@ -67,6 +66,7 @@ public class TileFinderImpl implements TileFinder {
 	}
 
 	private int getMostAppropriateDirection(Coordinate currentCoordinate, Coordinate targetCoordinate) {
+
 		if (currentCoordinate.getX() < targetCoordinate.getX()) {
 			//Лучше двигать вправо
 			if (currentCoordinate.getY() < targetCoordinate.getY()) {
@@ -112,7 +112,7 @@ public class TileFinderImpl implements TileFinder {
 	}
 
 	@Override
-	public void setPiece(Coordinate coordinate, AbstractPiece piece) {
+	public void setPiece(Coordinate coordinate, Piece piece) {
 		getTile(coordinate).setPiece(piece);
 	}
 
@@ -134,7 +134,7 @@ public class TileFinderImpl implements TileFinder {
 	}
 
 	@Override
-	public List<Coordinate> getPiecesCoordinatesForColor(PieceColor color) {
+	public List<Coordinate> getPiecesCoordinates(PieceColor color) {
 		List<Coordinate> locations = new ArrayList<>();
 		for (int x = 0; x <= 7; x++) {
 			for (int y = 0; y <= 7; y++) {

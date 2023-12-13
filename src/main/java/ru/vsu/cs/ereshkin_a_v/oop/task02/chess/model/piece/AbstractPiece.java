@@ -1,26 +1,25 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece;
 
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.MoveVariant;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
-
-import java.util.List;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
 
 public abstract class AbstractPiece implements Piece, Cloneable {
-	private PieceColor color;
-	private List<MoveVariant> moves;
+	private Player player;
 	private String name;
-	// TODO(Мусор)
-	private boolean repeatableMoves;
 
-	protected AbstractPiece(PieceColor color, String name, List<MoveVariant> moves, boolean repeatableMoves) {
-		this.color = color;
-		this.moves = moves;
-		this.repeatableMoves = repeatableMoves;
+	protected AbstractPiece(String name, Player player) {
+		this.player = player;
 		this.name = name;
 	}
 
-	public List<MoveVariant> getMoves() {
-		return moves;
+	@Override
+	public Player getPlayer() {
+		return player;
+	}
+
+	@Override
+	public void setPlayer(Player player) {
+		this.player = player;
 	}
 
 	public String getName() {
@@ -28,21 +27,15 @@ public abstract class AbstractPiece implements Piece, Cloneable {
 	}
 
 	public PieceColor getColor() {
-		return color;
-	}
-
-	public boolean hasRepeatableMoves() {
-		return repeatableMoves;
+		return player.getColor();
 	}
 
 	@Override
 	public AbstractPiece clone() {
 		try {
 			AbstractPiece clone = (AbstractPiece) super.clone();
-			clone.color = this.color;
+			clone.player = this.player;
 			clone.name = this.name;
-			clone.moves = this.moves.stream().map(MoveVariant::clone).toList();
-			clone.repeatableMoves = this.repeatableMoves;
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError();
