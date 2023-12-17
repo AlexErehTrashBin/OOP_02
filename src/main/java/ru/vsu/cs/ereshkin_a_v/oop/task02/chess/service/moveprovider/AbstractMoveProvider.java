@@ -25,13 +25,16 @@ public abstract class AbstractMoveProvider implements MoveProvider {
 
 	protected void propagateInDirection(List<MoveVariant> variants, int direction,
 	                                  Coordinate startCoordinate, Tile currentTile) {
-		if (currentTile == null) return;
+		if (currentTile == null || (!currentTile.isEmpty() && currentTile.getPiece().getPlayer() == board.getCurrentPlayer())) return;
+
 		Coordinate currentCoordinate = currentTile.getCoordinate();
 		int moveX = currentCoordinate.getX() - startCoordinate.getX();
 		int moveY = currentCoordinate.getY() - startCoordinate.getY();
 		variants.add(new MoveVariant(moveX, moveY));
 		Tile nextTile = currentTile.getNeighborsUnsafe().get(direction);
-		propagateInDirection(variants, direction, startCoordinate, nextTile);
+		if (currentTile.isEmpty()) {
+			propagateInDirection(variants, direction, startCoordinate, nextTile);
+		}
 	}
 
 	protected MoveVariant getMoveVariantByCoordinates(Coordinate start, Coordinate end){

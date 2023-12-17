@@ -71,35 +71,7 @@ public class MoveManagerImpl implements MoveManager {
 
 		if (toPiece instanceof King && toPiece.getPlayer() != board.getCurrentPlayer()) return false;
 
-		if (!isValidMoveForPiece(from, to)) return false;
-
-		//if hypothetical and valid, return true
-		if (hypothetical) return true;
-
-		Piece pieceToMove = fromTile.getPiece();
-		Move move = new DefaultMove(fromTile.getCoordinate(), toTile.getCoordinate(), pieceToMove, toTile.getPiece());
-		board.getMoves().offerLast(move);
-		toTile.setPiece(pieceToMove);
-		fromTile.empty();
-
-		boolean isOpponentUnderCheck = checkMateTester.isCheck(board.getCurrentPlayer());
-		if (isOpponentUnderCheck && !board.isUnderCheck(board.getOpponentPlayer())) {
-			board.setUnderCheck(true, board.getOpponentPlayer());
-		} else if (!isOpponentUnderCheck && board.isUnderCheck(board.getOpponentPlayer())) {
-			board.setUnderCheck(false, board.getOpponentPlayer());
-		}
-
-		boolean isCurrentUnderCheck = checkMateTester.isCheck(board.getOpponentPlayer());
-		if (isCurrentUnderCheck && !board.isUnderCheck(board.getCurrentPlayer())) {
-			board.setUnderCheck(true, board.getCurrentPlayer());
-		} else if (!isCurrentUnderCheck && board.isUnderCheck(board.getCurrentPlayer())) {
-			board.setUnderCheck(false, board.getCurrentPlayer());
-		}
-
-		board.setFinished(checkMateTester.isMate(board.getCurrentPlayer(), board.getOpponentPlayer()));
-		board.setFinished(checkMateTester.isMate(board.getOpponentPlayer(), board.getCurrentPlayer()));
-
-		return true;
+		return isValidMoveForPiece(from, to);
 	}
 
 	private boolean isValidMoveForPiece(Coordinate from, Coordinate to) {

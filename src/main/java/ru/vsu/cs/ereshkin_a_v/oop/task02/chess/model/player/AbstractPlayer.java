@@ -20,4 +20,9 @@ public abstract class AbstractPlayer implements Player {
 	public PieceColor getColor() {
 		return color;
 	}
+
+	@Override
+	public String toString() {
+		return "Player(" + "\"" + name + "\", " + color + ')';
+	}
 }

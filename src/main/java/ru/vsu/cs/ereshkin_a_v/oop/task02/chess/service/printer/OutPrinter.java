@@ -6,6 +6,9 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinder;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinderImpl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OutPrinter implements BoardPrinter {
 	private final TileFinder tileFinder;
 	public OutPrinter(Board board) {
@@ -32,8 +35,15 @@ public class OutPrinter implements BoardPrinter {
 	@Override
 	public void print(Board board) {
 		clearConsole();
-		System.out.println();
-		System.out.println("      [  A  ][ B ][  C  ][  D  ][  E  ][  F  ][  G  ][  H  ] \n");
+		List<String> infoList = new ArrayList<>();
+		for (int i = 0; i < board.getSize(); i++) {
+			infoList.add("");
+		}
+		infoList.set(0, "Текущий игрок: " + board.getCurrentPlayer().toString());
+		infoList.set(1, "Текущий игрок под шахом: " + board.isUnderCheck(board.getCurrentPlayer()));
+		infoList.set(2, "Оппонент: " + board.getOpponentPlayer().toString());
+		infoList.set(3, "Оппонент под шахом: " + board.isUnderCheck(board.getOpponentPlayer()));
+		System.out.println("\n      [ A ][ B ][ C ][ D ][ E ][ F ][ G ][ H ]\n");
 		for (int i = 0; i < 8; i++) {
 			System.out.print("[" + (8 - i) + "]   ");
 
@@ -42,9 +52,11 @@ public class OutPrinter implements BoardPrinter {
 				System.out.print(tile.getValue());
 			}
 
-			System.out.println("   [" + (8 - i) + "]");
+			System.out.print("   [" + (8 - i) + "]");
+			System.out.print("        " + infoList.get(i));
+			System.out.println();
 		}
 
-		System.out.println("\n      [  A  ][  B  ][  C  ][  D  ][  E  ][  F  ][  G  ][  H  ]\n");
+		System.out.println("\n      [ A ][ B ][ C ][ D ][ E ][ F ][ G ][ H ]\n");
 	}
 }
