@@ -16,12 +16,12 @@ public class KingMoveProvider extends AbstractMoveProvider {
 
 	private void addTileInDirection(List<MoveVariant> variants, int direction) {
 		Tile sideTile = tile.getNeighborsUnsafe().get(direction);
-		if (sideTile != null && sideTile.isEmpty()) {
-			Coordinate start = tile.getCoordinate();
-			Coordinate end = sideTile.getCoordinate();
-			MoveVariant variant = getMoveVariantByCoordinates(start, end);
-			variants.add(variant);
-		}
+		if (sideTile == null) return;
+		if (!sideTile.isEmpty() && sideTile.getPiece().getPlayer() != board.getCurrentPlayer()) return;
+		Coordinate start = tile.getCoordinate();
+		Coordinate end = sideTile.getCoordinate();
+		MoveVariant variant = getMoveVariantByCoordinates(start, end);
+		variants.add(variant);
 	}
 
 	@Override

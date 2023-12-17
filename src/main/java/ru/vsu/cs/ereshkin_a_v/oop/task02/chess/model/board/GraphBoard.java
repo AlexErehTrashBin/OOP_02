@@ -1,35 +1,44 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board;
 
+import ru.vsu.cs.ereshkin_a_v.oop.task02.GameConfig;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.Move;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.MatePositionFiller;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.PieceFiller;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.StartBoardFiller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GraphBoard implements Board {
 	private static final int SIZE = 8;
 	private Player currentPlayer;
 	private final Player firstPlayer;
 	private final Player secondPlayer;
-
+	private final Map<Player, Boolean> checkMap;
 	private boolean isFinished;
-	private boolean isCheck;
 	private Tile upperLeftTile;
 	private Tile lowerLeftTile;
 	private Tile upperRightTile;
 	private Tile lowerRightTile;
 	private int size;
+	private final Deque<Move> moves;
 
-	public GraphBoard(Player startPlayer, Player firstPlayer, Player secondPlayer) {
+	public GraphBoard(Player startPlayer, Player firstPlayer, Player secondPlayer, GameConfig.StartPosition startPosition) {
 		this.firstPlayer = firstPlayer;
 		this.secondPlayer = secondPlayer;
 		this.currentPlayer = startPlayer;
+		this.moves = new LinkedList<>();
 		this.isFinished = false;
+		this.checkMap = new HashMap<>();
 		initializeBoard(SIZE);
-		new StartBoardFiller(this, firstPlayer, secondPlayer, startPlayer.getColor()).fill();
+		PieceFiller filler = StartBoardFiller.getInstance();
+		if (startPosition == GameConfig.StartPosition.ALMOST_MATE) {
+			filler = MatePositionFiller.getInstance();
+		}
+		filler.fill(this, firstPlayer, secondPlayer, startPlayer.getColor());
 	}
 
 	@Override
@@ -43,8 +52,8 @@ public class GraphBoard implements Board {
 	}
 
 	@Override
-	public PieceColor getCurrentPlayer() {
-		return currentPlayer.getColor();
+	public Deque<Move> getMoves() {
+		return moves;
 	}
 
 	@Override
@@ -53,8 +62,34 @@ public class GraphBoard implements Board {
 	}
 
 	@Override
+	public Player getCurrentPlayer() {
+		return currentPlayer;
+	}
+
+	@Override
+	public Player getOpponentPlayer() {
+		return currentPlayer == firstPlayer ? secondPlayer : firstPlayer;
+	}
+
+	@Override
 	public void setFinished(boolean finished) {
 		isFinished = finished;
+	}
+
+	@Override
+	public boolean isUnderCheck(Player player) {
+		return checkMap.getOrDefault(player, false);
+	}
+
+	@Override
+	public void setUnderCheck(boolean underCheck, Player player) {
+		if (underCheck) {
+			System.out.println("Игрок " + player.getName() + " попал под шах!");
+		}
+		if (!underCheck) {
+			System.out.println("Игрок " + player.getName() + " вышел из под шаха!");
+		}
+		checkMap.put(player, underCheck);
 	}
 
 	private void initializeBoard(int size) {
@@ -145,16 +180,6 @@ public class GraphBoard implements Board {
 	@Override
 	public Tile getUpperLeftTile() {
 		return upperLeftTile;
-	}
-
-	@Override
-	public boolean isCheck() {
-		return isCheck;
-	}
-
-	@Override
-	public void setCheck(boolean check) {
-		isCheck = check;
 	}
 
 	@Override

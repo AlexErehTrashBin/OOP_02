@@ -15,6 +15,5 @@ public class NoPlayerService implements PlayerService {
 
 	@Override
 	public void makeMove() {
-		System.out.println("Игрок не игрок... ээээ....");
 	}
 }

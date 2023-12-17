@@ -33,7 +33,4 @@ public abstract class AbstractPlayerService implements PlayerService {
 				start.getY() + move.getY());
 	}
 
-	protected void printBoard() {
-		printer.print(board);
-	}
 }

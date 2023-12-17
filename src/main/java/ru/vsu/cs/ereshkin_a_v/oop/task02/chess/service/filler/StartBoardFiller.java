@@ -9,22 +9,21 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinder;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinderImpl;
 
 public class StartBoardFiller implements PieceFiller {
-	private final TileFinder finder;
-	private final Player firstPlayer;
-	private final Player secondPlayer;
-	private final PieceColor firstPlayerColor;
+	private static StartBoardFiller instance;
 
-	public StartBoardFiller(
-			Board board, Player firstPlayer,
-			Player secondPlayer, PieceColor firstPlayerColor) {
-		this.firstPlayerColor = firstPlayerColor;
-		this.firstPlayer = firstPlayer;
-		this.secondPlayer = secondPlayer;
-		finder = new TileFinderImpl(board);
+	public static StartBoardFiller getInstance() {
+		if (instance == null) {
+			instance = new StartBoardFiller();
+		}
+		return instance;
+	}
+	private StartBoardFiller(){
 	}
 
 	@Override
-	public void fill() {
+	public void fill(Board board, Player firstPlayer,
+	                 Player secondPlayer, PieceColor firstPlayerColor) {
+		TileFinder finder = new TileFinderImpl(board);
 		Player white;
 		Player black;
 		if (firstPlayerColor == PieceColor.WHITE) {

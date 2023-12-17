@@ -6,6 +6,7 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.King;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.Piece;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.TileDirections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,12 +72,12 @@ public class TileFinderImpl implements TileFinder {
 			//Лучше двигать вправо
 			if (currentCoordinate.getY() < targetCoordinate.getY()) {
 				// Лучше двигать вниз
-				return Tile.RIGHT_DOWN;
+				return TileDirections.RIGHT_DOWN;
 			} else if (currentCoordinate.getY() > targetCoordinate.getY()) {
 				// Лучше двигать вверх
-				return Tile.RIGHT_UP;
+				return TileDirections.RIGHT_UP;
 			} else {
-				return Tile.RIGHT;
+				return TileDirections.RIGHT;
 			}
 		}
 
@@ -84,23 +85,23 @@ public class TileFinderImpl implements TileFinder {
 			//Лучше двигать влево
 			if (currentCoordinate.getY() < targetCoordinate.getY()) {
 				// Лучше двигать вниз
-				return Tile.LEFT_DOWN;
+				return TileDirections.LEFT_DOWN;
 			} else if (currentCoordinate.getY() > targetCoordinate.getY()) {
 				// Лучше двигать вверх
-				return Tile.LEFT_UP;
+				return TileDirections.LEFT_UP;
 			} else {
-				return Tile.LEFT;
+				return TileDirections.LEFT;
 			}
 		}
 
 		if (currentCoordinate.getY() < targetCoordinate.getY()) {
 			//Лучше двигать вниз
-			return Tile.DOWN;
+			return TileDirections.DOWN;
 		}
 
 		if (currentCoordinate.getY() > targetCoordinate.getY()) {
 			//Лучше двигать вверх
-			return Tile.UP;
+			return TileDirections.UP;
 		}
 
 		return -1;
@@ -108,7 +109,10 @@ public class TileFinderImpl implements TileFinder {
 
 	@Override
 	public Piece getPiece(Coordinate coordinate) {
-		return getTile(coordinate).getPiece();
+		Tile tile = getTile(coordinate);
+		if (tile == null) return null;
+		if (tile.getPiece() == null) return null;
+		return tile.getPiece();
 	}
 
 	@Override
@@ -126,7 +130,7 @@ public class TileFinderImpl implements TileFinder {
 				Coordinate coordinate = new Coordinate(x, y);
 				Piece piece = getPiece(coordinate);
 				if (piece.getColor() == color && piece instanceof King) {
-					location = new Coordinate(x, y);
+					location = coordinate;
 				}
 			}
 		}

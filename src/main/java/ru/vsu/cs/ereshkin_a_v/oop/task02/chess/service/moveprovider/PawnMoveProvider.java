@@ -36,7 +36,7 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 		}
 		int defaultY = 1;
 		boolean isInDefaultPosition = tile.getCoordinate().getY() == defaultY;
-		if (isInDefaultPosition && downTile != null) {
+		if (isInDefaultPosition && downTile != null && downTile.isEmpty()) {
 			Tile doubleDownTile = downTile.getNeighborsUnsafe().get(DOWN);
 			if (doubleDownTile != null && doubleDownTile.isEmpty()) {
 				result.add(new MoveVariant(0, 2));
@@ -73,7 +73,7 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 		}
 		int defaultY = board.getSize() - 2;
 		boolean isInDefaultPosition = tile.getCoordinate().getY() == defaultY;
-		if (isInDefaultPosition && upTile != null) {
+		if (isInDefaultPosition && upTile != null && upTile.isEmpty()) {
 			Tile doubleUpTile = upTile.getNeighborsUnsafe().get(UP);
 			if (doubleUpTile != null && doubleUpTile.isEmpty()) {
 				result.add(new MoveVariant(0, -2));

@@ -1,9 +1,14 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller;
 
+import ru.vsu.cs.ereshkin_a_v.oop.task02.GameConfig;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.GraphBoard;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.Move;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.checkmatechecker.CheckMateTester;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.checkmatechecker.CheckMateTesterImpl;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinder;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinderImpl;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.movemanager.MoveManager;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.movemanager.MoveManagerImpl;
@@ -23,29 +28,43 @@ public class ChessGame {
 	private final Player secondPlayer;
 	private final PlayerService firstPlayerService;
 	private final PlayerService secondPlayerService;
+	private final TileFinder tileFinder;
+	private final CheckMateTester checkMateTester;
 
-	public ChessGame(Player firstPlayer, Player secondPlayer, PieceColor firstPlayerColor) {
-		this.firstPlayer = firstPlayer;
-		this.secondPlayer = secondPlayer;
-		this.currentPlayer = getPlayerByColor(firstPlayerColor);
-		this.board = new GraphBoard(currentPlayer, firstPlayer, secondPlayer);
+	public ChessGame(GameConfig config) {
+		this.firstPlayer = config.getFirstPlayer();
+		this.secondPlayer = config.getSecondPlayer();
+		this.currentPlayer = getPlayerByColor(config.getFirstPlayerColor());
+		this.board = new GraphBoard(currentPlayer, firstPlayer, secondPlayer, config.getStartPosition());
+		this.tileFinder = new TileFinderImpl(board);
+		this.checkMateTester = new CheckMateTesterImpl(board, tileFinder);
 		this.printer = new OutPrinter(board);
-		this.moveManager = new MoveManagerImpl(board, new TileFinderImpl(board));
+		this.moveManager = new MoveManagerImpl(board, tileFinder, checkMateTester);
 		this.playerServiceFactory = new PlayerServiceFactory(board, moveManager);
 		this.firstPlayerService = playerServiceFactory.createPlayerService(firstPlayer);
 		this.secondPlayerService = playerServiceFactory.createPlayerService(secondPlayer);
 		this.finished = false;
 	}
 
-	public void start() {
-		while (!isFinished()) {
-			if (currentPlayer == firstPlayer) {
-				firstPlayerService.makeMove();
-			} else {
-				secondPlayerService.makeMove();
-			}
-			endTurn();
+	public void makeMove() {
+		if (finished) return;
+		if (currentPlayer == firstPlayer) {
+			firstPlayerService.makeMove();
+		} else {
+			secondPlayerService.makeMove();
 		}
+		endTurn();
+	}
+
+	public void revertMove() {
+		if (board.getMoves().isEmpty()) {
+			return;
+		}
+		Move lastMove = board.getMoves().peekLast();
+		assert lastMove != null;
+		tileFinder.setPiece(lastMove.getStart(), lastMove.getPiece());
+		tileFinder.setPiece(lastMove.getEnd(), lastMove.getKilledPiece().orElse(null));
+		board.getMoves().pollLast();
 	}
 
 	private Player getPlayerByColor(PieceColor color) {
@@ -59,7 +78,6 @@ public class ChessGame {
 				: firstPlayer;
 		board.setCurrentPlayer(currentPlayer.getColor());
 		finished = board.isFinished();
-		printCurrentState();
 	}
 
 	public boolean isFinished() {

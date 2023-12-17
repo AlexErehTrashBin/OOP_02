@@ -49,7 +49,6 @@ public class RealPlayerService extends AbstractPlayerService {
 					System.out.println("Недопустимый ход!");
 				}
 				moveManager.playMove(from, to);
-				printBoard();
 				return;
 			}
 		}

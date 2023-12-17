@@ -8,6 +8,8 @@ public class King extends AbstractPiece {
 		super("King", player);
 	}
 
+
+
 	@Override
 	public char getCharValue() {
 		return getColor() == PieceColor.BLACK ? '♚' : '♔';

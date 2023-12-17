@@ -1,5 +1,7 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model;
 
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.MoveVariant;
+
 import java.util.Objects;
 
 public class Coordinate implements Cloneable {
@@ -17,6 +19,12 @@ public class Coordinate implements Cloneable {
 
 	public int getY() {
 		return y;
+	}
+
+	public Coordinate getSum(MoveVariant other) {
+		int newX = this.x + other.getX();
+		int newY = this.y + other.getY();
+		return new Coordinate(newX, newY);
 	}
 
 	@Override
