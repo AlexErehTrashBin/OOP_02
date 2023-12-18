@@ -6,6 +6,7 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.MoveVariant;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.movemanager.MoveManager;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.moveprovider.MoveProviderFactory;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.console.InputHandler;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class RealPlayerService extends AbstractPlayerService {
 				Coordinate to = handler.getTo(input);
 
 				Tile fromTile = tileFinder.getTile(from);
-				List<MoveVariant> variants = moveServiceFactory.create(fromTile).getAvailableMoves();
+				List<MoveVariant> variants = MoveProviderFactory.getInstance().create(board, fromTile).getAvailableMoves();
 				List<Coordinate> coordinates = variants.stream()
 						.map(it -> {
 							int fromX = fromTile.getCoordinate().getX();

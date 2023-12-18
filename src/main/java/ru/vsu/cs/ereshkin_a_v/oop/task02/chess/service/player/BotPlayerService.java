@@ -27,7 +27,7 @@ public class BotPlayerService extends AbstractPlayerService {
 		}
 
 		Tile tile = getTileWithPieceWithMoves();
-		MoveProvider provider = moveServiceFactory.create(tile);
+		MoveProvider provider = MoveProviderFactory.getInstance().create(board, tile);
 		List<MoveVariant> moves = provider.getAvailableMoves();
 		MoveVariant moveVariant = moves.get(random.nextInt(0, moves.size()));
 		Coordinate start = tile.getCoordinate();
@@ -41,7 +41,7 @@ public class BotPlayerService extends AbstractPlayerService {
 		coordinates.forEach(coordinate -> {
 			Tile tile = tileFinder.getTile(coordinate);
 
-			if (!new MoveProviderFactory(board).create(tile).getAvailableMoves().isEmpty()) {
+			if (!MoveProviderFactory.getInstance().create(board, tile).getAvailableMoves().isEmpty()) {
 				result.set(tile);
 			}
 		});

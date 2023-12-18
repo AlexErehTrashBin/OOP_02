@@ -22,7 +22,6 @@ public class ChessGame {
 	private final BoardPrinter printer;
 	private boolean finished;
 	private final MoveManager moveManager;
-	private final PlayerServiceFactory playerServiceFactory;
 	private Player currentPlayer;
 	private final Player firstPlayer;
 	private final Player secondPlayer;
@@ -40,9 +39,10 @@ public class ChessGame {
 		this.checkMateTester = new CheckMateTesterImpl(board, tileFinder);
 		this.printer = new OutPrinter(board);
 		this.moveManager = new MoveManagerImpl(board, tileFinder, checkMateTester);
-		this.playerServiceFactory = new PlayerServiceFactory(board, moveManager);
-		this.firstPlayerService = playerServiceFactory.createPlayerService(firstPlayer);
-		this.secondPlayerService = playerServiceFactory.createPlayerService(secondPlayer);
+		this.firstPlayerService = PlayerServiceFactory.getInstance()
+				.createPlayerService(board, moveManager, firstPlayer);
+		this.secondPlayerService = PlayerServiceFactory.getInstance()
+				.createPlayerService(board, moveManager, secondPlayer);
 		this.finished = false;
 	}
 

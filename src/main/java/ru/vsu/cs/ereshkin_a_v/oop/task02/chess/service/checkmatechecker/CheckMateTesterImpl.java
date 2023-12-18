@@ -24,8 +24,8 @@ public class CheckMateTesterImpl implements CheckMateTester {
 	private boolean checks(List<Coordinate> selfPieces, Coordinate opponentKingCoordinate) {
 		Set<Coordinate> coordinatesBeingChecked = new HashSet<>();
 		selfPieces
-				.forEach(selfPieceCoordinate -> new MoveProviderFactory(board)
-						.create(tileFinder.getTile(selfPieceCoordinate)).getAvailableMoves()
+				.forEach(selfPieceCoordinate -> MoveProviderFactory.getInstance()
+						.create(board, tileFinder.getTile(selfPieceCoordinate)).getAvailableMoves()
 						.forEach(it -> coordinatesBeingChecked.add(selfPieceCoordinate.getSum(it))));
 		return coordinatesBeingChecked.contains(opponentKingCoordinate);
 	}
@@ -50,15 +50,15 @@ public class CheckMateTesterImpl implements CheckMateTester {
 
 		Tile opponentKingTile = tileFinder.getTile(opponentKingCoordinate);
 
-		List<Coordinate> afterMoveCoordinatesForKing = new ArrayList<>(new MoveProviderFactory(board)
-				.create(opponentKingTile)
+		List<Coordinate> afterMoveCoordinatesForKing = new ArrayList<>(MoveProviderFactory.getInstance()
+				.create(board, opponentKingTile)
 				.getAvailableMoves().stream()
 				.map(opponentKingCoordinate::getSum)
 				.toList());
 
 		for (Coordinate pieceCoordinate : selfPieces) {
-			new MoveProviderFactory(board)
-					.create(tileFinder.getTile(pieceCoordinate)).getAvailableMoves()
+			MoveProviderFactory.getInstance()
+					.create(board, tileFinder.getTile(pieceCoordinate)).getAvailableMoves()
 					.stream()
 					.map(pieceCoordinate::getSum)
 					.forEach(afterMoveCoordinatesForKing::remove);

@@ -77,7 +77,7 @@ public class MoveManagerImpl implements MoveManager {
 	private boolean isValidMoveForPiece(Coordinate from, Coordinate to) {
 		Tile fromTile = tileFinder.getTile(from);
 		Piece fromPiece = fromTile.getPiece();
-		List<MoveVariant> validMoves = new MoveProviderFactory(board).create(fromTile).getAvailableMoves();
+		List<MoveVariant> validMoves = MoveProviderFactory.getInstance().create(board, fromTile).getAvailableMoves();
 		Tile toTile = tileFinder.getTile(to);
 
 		int xMove = to.getX() - from.getX();

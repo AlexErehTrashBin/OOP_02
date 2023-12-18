@@ -5,12 +5,19 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.*;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 
 public class MoveProviderFactory {
-	private final Board board;
-	public MoveProviderFactory(Board board) {
-		this.board = board;
+	private static MoveProviderFactory instance;
+
+	public static MoveProviderFactory getInstance() {
+		if (instance == null) {
+			instance = new MoveProviderFactory();
+		}
+		return instance;
 	}
 
-	public MoveProvider create(Tile tileWithPiece) {
+	private MoveProviderFactory(){
+	}
+
+	public MoveProvider create(Board board, Tile tileWithPiece) {
 		if (tileWithPiece.isEmpty()) return null;
 		if (tileWithPiece.getPiece().getClass() == Bishop.class) {
 			return new BishopMoveProvider(board, tileWithPiece);
