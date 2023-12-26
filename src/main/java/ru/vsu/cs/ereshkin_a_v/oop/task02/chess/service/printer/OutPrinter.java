@@ -11,8 +11,16 @@ import java.util.List;
 
 public class OutPrinter implements BoardPrinter {
 	private final TileFinder tileFinder;
-	public OutPrinter(Board board) {
-		this.tileFinder = new TileFinderImpl(board);
+	private static OutPrinter instance;
+
+	public static OutPrinter getInstance() {
+		if (instance == null) {
+			instance = new OutPrinter();
+		}
+		return instance;
+	}
+	private OutPrinter() {
+		this.tileFinder = TileFinderImpl.getInstance();
 	}
 	/**
 	 * Universal console clear for both Windows and Unix machines.
@@ -39,16 +47,16 @@ public class OutPrinter implements BoardPrinter {
 		for (int i = 0; i < board.getSize(); i++) {
 			infoList.add("");
 		}
-		infoList.set(0, "Текущий игрок: " + board.getCurrentPlayer().toString());
-		infoList.set(1, "Текущий игрок под шахом: " + board.isUnderCheck(board.getCurrentPlayer()));
-		infoList.set(2, "Оппонент: " + board.getOpponentPlayer().toString());
-		infoList.set(3, "Оппонент под шахом: " + board.isUnderCheck(board.getOpponentPlayer()));
+		infoList.set(0, "Текущий игрок: " + board.getCurrentTeam().getStringRepresentation());
+		infoList.set(1, "Текущий игрок под шахом: " + board.isUnderCheck(board.getCurrentTeam()));
+		infoList.set(2, "Оппонент: " + board.getOpponentTeam().getStringRepresentation());
+		infoList.set(3, "Оппонент под шахом: " + board.isUnderCheck(board.getOpponentTeam()));
 		System.out.println("\n      [ A ][ B ][ C ][ D ][ E ][ F ][ G ][ H ]\n");
 		for (int i = 0; i < 8; i++) {
 			System.out.print("[" + (8 - i) + "]   ");
 
 			for (int j = 0; j < 8; j++) {
-				Tile tile = tileFinder.getTile(new Coordinate(j, i));
+				Tile tile = tileFinder.getTile(board, new Coordinate(j, i));
 				System.out.print(tile.getValue());
 			}
 

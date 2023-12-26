@@ -1,12 +1,11 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board;
 
-import ru.vsu.cs.ereshkin_a_v.oop.task02.GameConfig;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.Move;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.team.Team;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.MatePositionFiller;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.TileDirections;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.PieceFiller;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.StartBoardFiller;
 
@@ -14,10 +13,10 @@ import java.util.*;
 
 public class GraphBoard implements Board {
 	private static final int SIZE = 8;
-	private Player currentPlayer;
-	private final Player firstPlayer;
-	private final Player secondPlayer;
-	private final Map<Player, Boolean> checkMap;
+	private Team currentTeam;
+	private final Team firstTeam;
+	private final Team secondTeam;
+	private final Map<Team, Boolean> checkMap;
 	private boolean isFinished;
 	private Tile upperLeftTile;
 	private Tile lowerLeftTile;
@@ -26,29 +25,26 @@ public class GraphBoard implements Board {
 	private int size;
 	private final Deque<Move> moves;
 
-	public GraphBoard(Player startPlayer, Player firstPlayer, Player secondPlayer, GameConfig.StartPosition startPosition) {
-		this.firstPlayer = firstPlayer;
-		this.secondPlayer = secondPlayer;
-		this.currentPlayer = startPlayer;
+	public GraphBoard(Team firstTeam, Team secondTeam) {
+		this.firstTeam = firstTeam;
+		this.secondTeam = secondTeam;
+		this.currentTeam = firstTeam;
 		this.moves = new LinkedList<>();
 		this.isFinished = false;
 		this.checkMap = new HashMap<>();
 		initializeBoard(SIZE);
 		PieceFiller filler = StartBoardFiller.getInstance();
-		if (startPosition == GameConfig.StartPosition.ALMOST_MATE) {
-			filler = MatePositionFiller.getInstance();
-		}
-		filler.fill(this, firstPlayer, secondPlayer, startPlayer.getColor());
+		filler.fill(this, firstTeam, secondTeam);
 	}
 
 	@Override
-	public void setCurrentPlayer(PieceColor newPlayer) {
-		currentPlayer = getPlayerByColor(newPlayer);
+	public void setCurrentTeam(Team team) {
+		currentTeam = team;
 	}
 
-	private Player getPlayerByColor(PieceColor color) {
-		if (firstPlayer.getColor().equals(color)) return firstPlayer;
-		return secondPlayer;
+	private Team getTeamByColor(PieceColor color) {
+		if (firstTeam.getColor().equals(color)) return firstTeam;
+		return secondTeam;
 	}
 
 	@Override
@@ -62,13 +58,13 @@ public class GraphBoard implements Board {
 	}
 
 	@Override
-	public Player getCurrentPlayer() {
-		return currentPlayer;
+	public Team getCurrentTeam() {
+		return currentTeam;
 	}
 
 	@Override
-	public Player getOpponentPlayer() {
-		return currentPlayer == firstPlayer ? secondPlayer : firstPlayer;
+	public Team getOpponentTeam() {
+		return currentTeam == firstTeam ? secondTeam : firstTeam;
 	}
 
 	@Override
@@ -77,18 +73,12 @@ public class GraphBoard implements Board {
 	}
 
 	@Override
-	public boolean isUnderCheck(Player player) {
+	public boolean isUnderCheck(Team player) {
 		return checkMap.getOrDefault(player, false);
 	}
 
 	@Override
-	public void setUnderCheck(boolean underCheck, Player player) {
-		if (underCheck) {
-			System.out.println("Игрок " + player.getName() + " попал под шах!");
-		}
-		if (!underCheck) {
-			System.out.println("Игрок " + player.getName() + " вышел из под шаха!");
-		}
+	public void setUnderCheck(boolean underCheck, Team player) {
 		checkMap.put(player, underCheck);
 	}
 
@@ -107,7 +97,7 @@ public class GraphBoard implements Board {
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
 				Tile tile = board[row][col];
-				List<Tile> neighbors = new ArrayList<>(Tile.DIRECTIONS_COUNT);
+				List<Tile> neighbors = new ArrayList<>(TileDirections.DIRECTIONS_COUNT);
 
 				// Установка ссылки вверх
 				if (row > 0) {

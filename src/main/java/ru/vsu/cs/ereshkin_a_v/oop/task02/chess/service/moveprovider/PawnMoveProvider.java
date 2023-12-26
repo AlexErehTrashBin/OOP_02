@@ -18,18 +18,18 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 	@Override
 	public List<MoveVariant> getAvailableMoves() {
 		List<MoveVariant> result = new ArrayList<>();
-		PieceColor pieceColor = tile.getPiece().getPlayer().getColor();
+		PieceColor pieceColor = tile.getPiece().getTeam().getColor();
 		if (pieceColor == PieceColor.BLACK) {
-			return makeMoveVariantsForBlack();
-		} else if (pieceColor == PieceColor.WHITE) {
 			return makeMoveVariantsForWhite();
+		} else if (pieceColor == PieceColor.WHITE) {
+			return makeMoveVariantsForBlack();
 		}
 		return result;
 	}
 
 	private List<MoveVariant> makeMoveVariantsForBlack() {
 		List<MoveVariant> result = new ArrayList<>();
-		Tile downTile = tile.getNeighborsUnsafe().get(DOWN);
+		Tile downTile = tile.getNeighbors().get(DOWN);
 		boolean existsDownTile = downTile != null;
 		if (existsDownTile && downTile.isEmpty()) {
 			result.add(new MoveVariant(0, 1));
@@ -37,13 +37,13 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 		int defaultY = 1;
 		boolean isInDefaultPosition = tile.getCoordinate().getY() == defaultY;
 		if (isInDefaultPosition && downTile != null && downTile.isEmpty()) {
-			Tile doubleDownTile = downTile.getNeighborsUnsafe().get(DOWN);
+			Tile doubleDownTile = downTile.getNeighbors().get(DOWN);
 			if (doubleDownTile != null && doubleDownTile.isEmpty()) {
 				result.add(new MoveVariant(0, 2));
 			}
 		}
 
-		Tile rightDownTile = tile.getNeighborsUnsafe().get(RIGHT_DOWN);
+		Tile rightDownTile = tile.getNeighbors().get(RIGHT_DOWN);
 		boolean existsRightDownTile = rightDownTile != null;
 		if (existsRightDownTile && !rightDownTile.isEmpty()) {
 			boolean enemyInTile = rightDownTile.getPiece().getColor() != tile.getPiece().getColor();
@@ -52,7 +52,7 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 			}
 		}
 
-		Tile leftDownTile = tile.getNeighborsUnsafe().get(LEFT_DOWN);
+		Tile leftDownTile = tile.getNeighbors().get(LEFT_DOWN);
 		boolean existsLeftDownTile = leftDownTile != null;
 		if (existsLeftDownTile && !leftDownTile.isEmpty()) {
 			boolean enemyInTile = leftDownTile.getPiece().getColor() != tile.getPiece().getColor();
@@ -66,7 +66,7 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 
 	private List<MoveVariant> makeMoveVariantsForWhite() {
 		List<MoveVariant> result = new ArrayList<>();
-		Tile upTile = tile.getNeighborsUnsafe().get(UP);
+		Tile upTile = tile.getNeighbors().get(UP);
 		boolean existsUpTile = upTile != null;
 		if (existsUpTile && upTile.isEmpty()) {
 			result.add(new MoveVariant(0, -1));
@@ -74,13 +74,13 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 		int defaultY = board.getSize() - 2;
 		boolean isInDefaultPosition = tile.getCoordinate().getY() == defaultY;
 		if (isInDefaultPosition && upTile != null && upTile.isEmpty()) {
-			Tile doubleUpTile = upTile.getNeighborsUnsafe().get(UP);
+			Tile doubleUpTile = upTile.getNeighbors().get(UP);
 			if (doubleUpTile != null && doubleUpTile.isEmpty()) {
 				result.add(new MoveVariant(0, -2));
 			}
 		}
 
-		Tile rightUpTile = tile.getNeighborsUnsafe().get(RIGHT_UP);
+		Tile rightUpTile = tile.getNeighbors().get(RIGHT_UP);
 		boolean existsRightUpTile = rightUpTile != null;
 		if (existsRightUpTile && !rightUpTile.isEmpty()) {
 			boolean enemyInTile = rightUpTile.getPiece().getColor() != tile.getPiece().getColor();
@@ -89,7 +89,7 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 			}
 		}
 
-		Tile leftUpTile = tile.getNeighborsUnsafe().get(LEFT_UP);
+		Tile leftUpTile = tile.getNeighbors().get(LEFT_UP);
 		boolean existsLeftUpTile = leftUpTile != null;
 		if (existsLeftUpTile && !leftUpTile.isEmpty()) {
 			boolean enemyInTile = leftUpTile.getPiece().getColor() != tile.getPiece().getColor();

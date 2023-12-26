@@ -1,5 +1,7 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.player;
 
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
+
 public class NoPlayerService implements PlayerService {
 	private static NoPlayerService instance;
 
@@ -14,6 +16,6 @@ public class NoPlayerService implements PlayerService {
 	}
 
 	@Override
-	public void makeMove() {
+	public void makeMove(Board board) {
 	}
 }

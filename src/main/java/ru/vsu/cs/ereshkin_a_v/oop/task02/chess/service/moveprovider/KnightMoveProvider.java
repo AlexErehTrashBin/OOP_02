@@ -30,11 +30,11 @@ public class KnightMoveProvider extends AbstractMoveProvider {
 
 	private void addMoveInVariant(List<MoveVariant> variants, int doubleDirection,
 	                              int sideDirection) {
-		Tile firstNextTile = tile.getNeighborsUnsafe().get(doubleDirection);
+		Tile firstNextTile = tile.getNeighbors().get(doubleDirection);
 		if (firstNextTile == null) return;
-		Tile secondNextTile = firstNextTile.getNeighborsUnsafe().get(doubleDirection);
+		Tile secondNextTile = firstNextTile.getNeighbors().get(doubleDirection);
 		if (secondNextTile == null) return;
-		Tile finalTile = secondNextTile.getNeighborsUnsafe().get(sideDirection);
+		Tile finalTile = secondNextTile.getNeighbors().get(sideDirection);
 		if (finalTile == null || !finalTile.isEmpty()) return;
 		Coordinate start = tile.getCoordinate();
 		Coordinate end = finalTile.getCoordinate();

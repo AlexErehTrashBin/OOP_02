@@ -5,7 +5,8 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.MoveVariant;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.movemanager.MoveManager;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinderImpl;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.movemanager.MoveManagerImpl;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.moveprovider.MoveProviderFactory;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.console.InputHandler;
 
@@ -15,13 +16,13 @@ import java.util.Scanner;
 public class RealPlayerService extends AbstractPlayerService {
 	private final Scanner scanner;
 	private final InputHandler handler;
-	public RealPlayerService(MoveManager moveManager, Board board, Player player) {
-		super(moveManager, board, player);
+	public RealPlayerService(Player player) {
+		super(player);
 		scanner = new Scanner(System.in);
 		handler = new InputHandler();
 	}
 	@Override
-	public void makeMove() {
+	public void makeMove(Board board) {
 		while (true) {
 			System.out.print("Введите ход (например. A2-A3): ");
 			String input = scanner.nextLine();
@@ -33,7 +34,7 @@ public class RealPlayerService extends AbstractPlayerService {
 				Coordinate from = handler.getFrom(input);
 				Coordinate to = handler.getTo(input);
 
-				Tile fromTile = tileFinder.getTile(from);
+				Tile fromTile = TileFinderImpl.getInstance().getTile(board, from);
 				List<MoveVariant> variants = MoveProviderFactory.getInstance().create(board, fromTile).getAvailableMoves();
 				List<Coordinate> coordinates = variants.stream()
 						.map(it -> {
@@ -49,7 +50,7 @@ public class RealPlayerService extends AbstractPlayerService {
 				if (!coordinates.contains(to)) {
 					System.out.println("Недопустимый ход!");
 				}
-				moveManager.playMove(from, to);
+				MoveManagerImpl.getInstance().playMove(board, from, to);
 				return;
 			}
 		}

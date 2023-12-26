@@ -1,8 +1,7 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board;
 
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.Move;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.team.Team;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 
 import java.util.Deque;
@@ -10,14 +9,14 @@ import java.util.Deque;
 public interface Board {
 	Deque<Move> getMoves();
 	boolean isFinished();
-	Player getCurrentPlayer();
-	Player getOpponentPlayer();
+	Team getCurrentTeam();
+	Team getOpponentTeam();
 
 	void setFinished(boolean finished);
-	boolean isUnderCheck(Player player);
-	void setUnderCheck(boolean underCheck, Player player);
+	boolean isUnderCheck(Team player);
+	void setUnderCheck(boolean underCheck, Team player);
 
-	void setCurrentPlayer(PieceColor newPlayer);
+	void setCurrentTeam(Team team);
 
 	Tile getUpperLeftTile();
 

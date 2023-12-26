@@ -3,9 +3,10 @@ package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.checkmatechecker;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.team.Team;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinder;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinderImpl;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.moveprovider.MoveProviderFactory;
 
 import java.util.ArrayList;
@@ -14,41 +15,49 @@ import java.util.List;
 import java.util.Set;
 
 public class CheckMateTesterImpl implements CheckMateTester {
-	private final Board board;
+	private static CheckMateTesterImpl instance;
 	private final TileFinder tileFinder;
-	public CheckMateTesterImpl(Board board, TileFinder tileFinder) {
-		this.board = board;
-		this.tileFinder = tileFinder;
+
+	private CheckMateTesterImpl() {
+		tileFinder = TileFinderImpl.getInstance();
 	}
 
-	private boolean checks(List<Coordinate> selfPieces, Coordinate opponentKingCoordinate) {
+	public static CheckMateTesterImpl getInstance() {
+		if (instance == null) {
+			instance = new CheckMateTesterImpl();
+		}
+		return instance;
+	}
+
+	private boolean checks(Board board, List<Coordinate> selfPieces, Coordinate opponentKingCoordinate) {
 		Set<Coordinate> coordinatesBeingChecked = new HashSet<>();
 		selfPieces
 				.forEach(selfPieceCoordinate -> MoveProviderFactory.getInstance()
-						.create(board, tileFinder.getTile(selfPieceCoordinate)).getAvailableMoves()
+						.create(board, tileFinder.getTile(board, selfPieceCoordinate)).getAvailableMoves()
 						.forEach(it -> coordinatesBeingChecked.add(selfPieceCoordinate.getSum(it))));
 		return coordinatesBeingChecked.contains(opponentKingCoordinate);
 	}
+
 	@Override
-	public boolean isCheck(Player player) {
+	public boolean isCheck(Board board, Team player) {
 		PieceColor selfColor = player.getColor();
 		PieceColor opponentColor = selfColor.getOpponent();
-		Coordinate opponentKingCoordinate = tileFinder.getKingLocation(opponentColor);
+		Coordinate opponentKingCoordinate = tileFinder.getKingLocation(board, opponentColor);
 
-		List<Coordinate> selfPieces = tileFinder.getPiecesCoordinates(selfColor);
-		return checks(selfPieces, opponentKingCoordinate);
+		List<Coordinate> selfPieces = tileFinder.getPiecesCoordinates(board, selfColor);
+		return checks(board, selfPieces, opponentKingCoordinate);
 	}
 
 	@Override
-	public boolean isMate(Player player, Player underCheckPlayer) {
+	public boolean isMate(Board board, Team player, Team underCheckPlayer) {
 		if (!board.isUnderCheck(player)) return false;
 
 		PieceColor selfColor = player.getColor();
-		Coordinate opponentKingCoordinate = tileFinder.getKingLocation(player.getColor());
+		Coordinate opponentKingCoordinate = tileFinder.getKingLocation(board, player.getColor());
 
-		List<Coordinate> selfPieces = tileFinder.getPiecesCoordinates(selfColor);
+		List<Coordinate> selfPieces = tileFinder.getPiecesCoordinates(board, selfColor);
 
-		Tile opponentKingTile = tileFinder.getTile(opponentKingCoordinate);
+		Tile opponentKingTile = tileFinder.getTile(board, opponentKingCoordinate);
 
 		List<Coordinate> afterMoveCoordinatesForKing = new ArrayList<>(MoveProviderFactory.getInstance()
 				.create(board, opponentKingTile)
@@ -58,7 +67,7 @@ public class CheckMateTesterImpl implements CheckMateTester {
 
 		for (Coordinate pieceCoordinate : selfPieces) {
 			MoveProviderFactory.getInstance()
-					.create(board, tileFinder.getTile(pieceCoordinate)).getAvailableMoves()
+					.create(board, tileFinder.getTile(board, pieceCoordinate)).getAvailableMoves()
 					.stream()
 					.map(pieceCoordinate::getSum)
 					.forEach(afterMoveCoordinatesForKing::remove);

@@ -1,9 +1,10 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.movemanager;
 
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board.Board;
 
 public interface MoveManager {
-	void playMove(Coordinate from, Coordinate to);
+	void playMove(Board board, Coordinate from, Coordinate to);
 
-	boolean isValidMove(Coordinate from, Coordinate to, boolean hypothetical);
+	boolean isValidMove(Board board, Coordinate from, Coordinate to, boolean hypothetical);
 }

@@ -1,7 +1,7 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece;
 
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.team.Team;
 
 public interface Piece {
 
@@ -11,7 +11,7 @@ public interface Piece {
 
 	String getName();
 
-	Player getPlayer();
+	Team getTeam();
 
-	void setPlayer(Player player);
+	void setTeam(Team team);
 }

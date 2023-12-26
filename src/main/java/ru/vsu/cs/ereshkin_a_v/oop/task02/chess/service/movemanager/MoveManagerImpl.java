@@ -8,28 +8,31 @@ import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.MoveVariant;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.King;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.Piece;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.checkmatechecker.CheckMateTester;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinder;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.checkmatechecker.CheckMateTesterImpl;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.finder.TileFinderImpl;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.moveprovider.MoveProviderFactory;
 
 import java.util.List;
 
 public class MoveManagerImpl implements MoveManager {
-	private final Board board;
-	private final TileFinder tileFinder;
-	private final CheckMateTester checkMateTester;
-	public MoveManagerImpl(Board board, TileFinder tileFinder, CheckMateTester checkMateTester) {
-		this.board = board;
-		this.tileFinder = tileFinder;
-		this.checkMateTester = checkMateTester;
+	private static MoveManagerImpl instance;
+
+	public static MoveManagerImpl getInstance() {
+		if (instance == null) {
+			instance = new MoveManagerImpl();
+		}
+		return instance;
+	}
+
+	private MoveManagerImpl() {
 	}
 
 	@Override
-	public void playMove(Coordinate from, Coordinate to) {
-		if (!isValidMove(from, to, false)) return;
+	public void playMove(Board board, Coordinate from, Coordinate to) {
+		if (!isValidMove(board, from, to, false)) return;
 
-		Tile fromTile = tileFinder.getTile(from);
-		Tile toTile = tileFinder.getTile(to);
+		Tile fromTile = TileFinderImpl.getInstance().getTile(board, from);
+		Tile toTile = TileFinderImpl.getInstance().getTile(board, to);
 		Piece toPiece = toTile.getPiece();
 
 		Piece pieceToMove = fromTile.getPiece();
@@ -38,47 +41,47 @@ public class MoveManagerImpl implements MoveManager {
 		toTile.setPiece(pieceToMove);
 		fromTile.empty();
 
-		boolean isOpponentUnderCheck = checkMateTester.isCheck(board.getCurrentPlayer());
-		if (isOpponentUnderCheck && !board.isUnderCheck(board.getOpponentPlayer())) {
-			board.setUnderCheck(true, board.getOpponentPlayer());
-		} else if (!isOpponentUnderCheck && board.isUnderCheck(board.getOpponentPlayer())) {
-			board.setUnderCheck(false, board.getOpponentPlayer());
+		boolean isOpponentUnderCheck = CheckMateTesterImpl.getInstance().isCheck(board, board.getCurrentTeam());
+		if (isOpponentUnderCheck && !board.isUnderCheck(board.getOpponentTeam())) {
+			board.setUnderCheck(true, board.getOpponentTeam());
+		} else if (!isOpponentUnderCheck && board.isUnderCheck(board.getOpponentTeam())) {
+			board.setUnderCheck(false, board.getOpponentTeam());
 		}
 
-		boolean isCurrentUnderCheck = checkMateTester.isCheck(board.getOpponentPlayer());
-		if (isCurrentUnderCheck && !board.isUnderCheck(board.getCurrentPlayer())) {
-			board.setUnderCheck(true, board.getCurrentPlayer());
-		} else if (!isCurrentUnderCheck && board.isUnderCheck(board.getCurrentPlayer())) {
-			board.setUnderCheck(false, board.getCurrentPlayer());
+		boolean isCurrentUnderCheck = CheckMateTesterImpl.getInstance().isCheck(board, board.getOpponentTeam());
+		if (isCurrentUnderCheck && !board.isUnderCheck(board.getCurrentTeam())) {
+			board.setUnderCheck(true, board.getCurrentTeam());
+		} else if (!isCurrentUnderCheck && board.isUnderCheck(board.getCurrentTeam())) {
+			board.setUnderCheck(false, board.getCurrentTeam());
 		}
 
-		board.setFinished(checkMateTester.isMate(board.getCurrentPlayer(), board.getOpponentPlayer()));
-		board.setFinished(checkMateTester.isMate(board.getOpponentPlayer(), board.getCurrentPlayer()));
+		board.setFinished(CheckMateTesterImpl.getInstance().isMate(board, board.getCurrentTeam(), board.getOpponentTeam()));
+		board.setFinished(CheckMateTesterImpl.getInstance().isMate(board, board.getOpponentTeam(), board.getCurrentTeam()));
 	}
 
 	@Override
-	public boolean isValidMove(Coordinate from, Coordinate to, boolean hypothetical) {
-		Tile fromTile = tileFinder.getTile(from);
-		Tile toTile = tileFinder.getTile(to);
+	public boolean isValidMove(Board board, Coordinate from, Coordinate to, boolean hypothetical) {
+		Tile fromTile = TileFinderImpl.getInstance().getTile(board, from);
+		Tile toTile = TileFinderImpl.getInstance().getTile(board, to);
 		Piece fromPiece = fromTile.getPiece();
 		Piece toPiece = toTile.getPiece();
 
 		if (fromPiece == null) return false;
 
-		if (fromPiece.getPlayer() != board.getCurrentPlayer()) return false;
+		if (fromPiece.getTeam() != board.getCurrentTeam()) return false;
 
-		if (toPiece != null && toPiece.getPlayer() == board.getCurrentPlayer()) return false;
+		if (toPiece != null && toPiece.getTeam() == board.getCurrentTeam()) return false;
 
-		if (toPiece instanceof King && toPiece.getPlayer() != board.getCurrentPlayer()) return false;
+		if (toPiece instanceof King && toPiece.getTeam() != board.getCurrentTeam()) return false;
 
-		return isValidMoveForPiece(from, to);
+		return isValidMoveForPiece(board, from, to);
 	}
 
-	private boolean isValidMoveForPiece(Coordinate from, Coordinate to) {
-		Tile fromTile = tileFinder.getTile(from);
+	private boolean isValidMoveForPiece(Board board, Coordinate from, Coordinate to) {
+		Tile fromTile = TileFinderImpl.getInstance().getTile(board, from);
 		Piece fromPiece = fromTile.getPiece();
 		List<MoveVariant> validMoves = MoveProviderFactory.getInstance().create(board, fromTile).getAvailableMoves();
-		Tile toTile = tileFinder.getTile(to);
+		Tile toTile = TileFinderImpl.getInstance().getTile(board, to);
 
 		int xMove = to.getX() - from.getX();
 		int yMove = to.getY() - from.getY();
