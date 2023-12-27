@@ -68,9 +68,9 @@ public class MoveManagerImpl implements MoveManager {
 
 		if (fromPiece == null) return false;
 
-		if (fromPiece.getTeam() != board.getCurrentTeam()) return false;
+		if (fromPiece.getTeam().getColor() != board.getCurrentTeam().getColor()) return false;
 
-		if (toPiece != null && toPiece.getTeam() == board.getCurrentTeam()) return false;
+		if (toPiece != null && toPiece.getTeam().getColor() == board.getCurrentTeam().getColor()) return false;
 
 		if (toPiece instanceof King && toPiece.getTeam() != board.getCurrentTeam()) return false;
 

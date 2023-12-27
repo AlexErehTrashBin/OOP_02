@@ -1,13 +1,25 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller.ChessGame;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.GameConfig;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.Move;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.Piece;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.BotPlayer;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.Player;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.player.RealPlayer;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.serial.SerialGameConfig;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.team.Team;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.console.command.*;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.util.MoveSerializer;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.util.PieceSerializer;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.util.PlayerSerializer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Main {
@@ -75,20 +87,35 @@ public class Main {
 	}
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
+		ChessGame game;
+		var gson = new GsonBuilder()
+				.registerTypeAdapter(Piece.class, new PieceSerializer())
+				.registerTypeAdapter(Player.class, new PlayerSerializer())
+				.registerTypeAdapter(Move.class, new MoveSerializer())
+				.create();
+		try {
+			SerialGameConfig config = gson.fromJson(Files.readString(Path.of("board.json")), SerialGameConfig.class);
+			game = new ChessGame(config);
+		} catch (IOException e) {
+			System.err.println("Произошла ошибка чтения из файла \"board.json\"");
+			GameConfig config = obtainConfig();
+			game = new ChessGame(config);
+		}
 
-		GameConfig config = obtainConfig();
-
-		ChessGame game = new ChessGame(config);
-
-		ConsoleCommand makeMoveCommand = new MakeMoveCommand(game);
-		ConsoleCommand printBoardCommand = new PrintBoardCommand(game);
-		ConsoleCommand revertMoveCommand = new RevertMoveCommand(game);
-		CommandInvoker invoker = new CommandInvoker(makeMoveCommand, printBoardCommand, revertMoveCommand);
+		CommandInvoker invoker = new CommandInvoker(
+				new MakeMoveCommand(game),
+				new PrintBoardCommand(game),
+				new RevertMoveCommand(game),
+				new SaveCommand(game),
+				new LoadCommand(game)
+		);
 
 		System.out.println("Справка по управлению");
 		System.out.println("1 - напечатать поле");
 		System.out.println("2 - сделать ход");
 		System.out.println("3 - откатить ход (если ходов нет - ничего не делать)");
+		System.out.println("4 - сохранить в файл");
+		System.out.println("5 - загрузить из файла");
 
 
 		while (!game.isFinished()) {
@@ -98,6 +125,8 @@ public class Main {
 				case 1 -> invoker.printBoard();
 				case 2 -> invoker.makeMove();
 				case 3 -> invoker.revertMove();
+				case 4 -> invoker.save();
+				case 5 -> invoker.load();
 			}
 		}
 		scanner.close();

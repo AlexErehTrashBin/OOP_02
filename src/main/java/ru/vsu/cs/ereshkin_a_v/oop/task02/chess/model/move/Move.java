@@ -10,4 +10,5 @@ public interface Move {
 	Optional<Piece> getKilledPiece();
 	Coordinate getStart();
 	Coordinate getEnd();
+	String getType();
 }

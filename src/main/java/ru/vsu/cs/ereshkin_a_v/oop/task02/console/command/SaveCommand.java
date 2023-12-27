@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller.ChessGame;
 
 @RequiredArgsConstructor
-public class RevertMoveCommand implements ConsoleCommand {
+public class SaveCommand implements ConsoleCommand{
 	private final ChessGame game;
-
 	@Override
 	public void execute() {
-		game.revertMove();
+		game.saveToFile();
 	}
 }

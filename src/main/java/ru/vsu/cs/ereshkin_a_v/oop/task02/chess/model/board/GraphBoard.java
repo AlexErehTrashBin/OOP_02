@@ -3,9 +3,11 @@ package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.Move;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.serial.SerialGameConfig;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.team.Team;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.Tile;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.tile.TileDirections;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.DeserializedFiller;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.PieceFiller;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.filler.StartBoardFiller;
 
@@ -16,7 +18,7 @@ public class GraphBoard implements Board {
 	private Team currentTeam;
 	private final Team firstTeam;
 	private final Team secondTeam;
-	private final Map<Team, Boolean> checkMap;
+	private Map<Team, Boolean> checkMap;
 	private boolean isFinished;
 	private Tile upperLeftTile;
 	private Tile lowerLeftTile;
@@ -34,6 +36,18 @@ public class GraphBoard implements Board {
 		this.checkMap = new HashMap<>();
 		initializeBoard(SIZE);
 		PieceFiller filler = StartBoardFiller.getInstance();
+		filler.fill(this, firstTeam, secondTeam);
+	}
+
+	public GraphBoard(Team firstTeam, Team secondTeam, SerialGameConfig config) {
+		this.firstTeam = firstTeam;
+		this.secondTeam = secondTeam;
+		this.currentTeam = firstTeam;
+		this.moves = config.getMoves();
+		this.isFinished = config.isFinished();
+		this.checkMap = config.getCheckMap();
+		initializeBoard(config.getSize());
+		PieceFiller filler = new DeserializedFiller(config.getBoardState());
 		filler.fill(this, firstTeam, secondTeam);
 	}
 
@@ -65,6 +79,16 @@ public class GraphBoard implements Board {
 	@Override
 	public Team getOpponentTeam() {
 		return currentTeam == firstTeam ? secondTeam : firstTeam;
+	}
+
+	@Override
+	public Map<Team, Boolean> getCheckMap() {
+		return checkMap;
+	}
+
+	@Override
+	public void setCheckMap(Map<Team, Boolean> map) {
+		checkMap = map;
 	}
 
 	@Override

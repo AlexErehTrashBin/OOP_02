@@ -20,9 +20,9 @@ public class PawnMoveProvider extends AbstractMoveProvider {
 		List<MoveVariant> result = new ArrayList<>();
 		PieceColor pieceColor = tile.getPiece().getTeam().getColor();
 		if (pieceColor == PieceColor.BLACK) {
-			return makeMoveVariantsForWhite();
-		} else if (pieceColor == PieceColor.WHITE) {
 			return makeMoveVariantsForBlack();
+		} else if (pieceColor == PieceColor.WHITE) {
+			return makeMoveVariantsForWhite();
 		}
 		return result;
 	}
