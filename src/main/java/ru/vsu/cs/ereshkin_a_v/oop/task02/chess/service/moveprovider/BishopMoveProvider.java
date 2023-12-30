@@ -21,10 +21,10 @@ public class BishopMoveProvider extends AbstractMoveProvider {
 		Tile startTile = tile;
 		Coordinate startCoordinate = tile.getCoordinate();
 
-		propagateInDirection(result, RIGHT_UP, startCoordinate, startTile);
-		propagateInDirection(result, RIGHT_DOWN, startCoordinate, startTile);
-		propagateInDirection(result, LEFT_UP, startCoordinate, startTile);
-		propagateInDirection(result, LEFT_DOWN, startCoordinate, startTile);
+		propagateInDirection(result, RIGHT_UP, startCoordinate, startTile.getNeighbors().get(RIGHT_UP));
+		propagateInDirection(result, RIGHT_DOWN, startCoordinate, startTile.getNeighbors().get(RIGHT_DOWN));
+		propagateInDirection(result, LEFT_UP, startCoordinate, startTile.getNeighbors().get(LEFT_UP));
+		propagateInDirection(result, LEFT_DOWN, startCoordinate, startTile.getNeighbors().get(LEFT_DOWN));
 
 		return result;
 	}

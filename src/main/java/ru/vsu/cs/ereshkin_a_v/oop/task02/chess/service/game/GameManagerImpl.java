@@ -1,4 +1,4 @@
-package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller;
+package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.service.game;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChessGame {
+public class GameManagerImpl implements GameManager {
 	private Board board;
 	private BoardPrinter printer;
 	private Team firstPlayer;
@@ -40,7 +40,7 @@ public class ChessGame {
 	private TileFinder tileFinder;
 	private Gson gson;
 
-	public ChessGame(GameConfig config) {
+	public GameManagerImpl(GameConfig config) {
 		this.firstPlayer = config.getFirstTeam();
 		this.secondPlayer = config.getSecondTeam();
 		this.board = new GraphBoard(firstPlayer, secondPlayer);
@@ -50,7 +50,7 @@ public class ChessGame {
 		setupGson();
 	}
 
-	public ChessGame(SerialGameConfig config) {
+	public GameManagerImpl(SerialGameConfig config) {
 		this.firstPlayer = config.getFirstTeam();
 		this.secondPlayer = config.getSecondTeam();
 		this.board = new GraphBoard(firstPlayer, secondPlayer, config);
@@ -70,15 +70,18 @@ public class ChessGame {
 				.create();
 	}
 
+	@Override
 	public void makeMove() {
 		if (board.isFinished()) return;
 		allTeamsService.makeMove();
 	}
 
+	@Override
 	public boolean isFinished() {
 		return board.isFinished();
 	}
 
+	@Override
 	public void revertMove() {
 		if (board.getMoves().isEmpty()) {
 			return;
@@ -90,11 +93,14 @@ public class ChessGame {
 		board.getMoves().pollLast();
 	}
 
+
+	@Override
 	public void printCurrentState() {
 		printer.print(board);
 	}
 
 	@SneakyThrows
+	@Override
 	public void saveToFile() {
 		int currentTeam = board.getCurrentTeam() == firstPlayer ? 1 : 2;
 		TileFinder tileFinder = TileFinderImpl.getInstance();
@@ -130,6 +136,7 @@ public class ChessGame {
 	}
 
 	@SneakyThrows
+	@Override
 	public void loadFromFile() {
 		SerialGameConfig config = gson.fromJson(Files.readString(Path.of("board.json")), SerialGameConfig.class);
 		this.firstPlayer = config.getFirstTeam();

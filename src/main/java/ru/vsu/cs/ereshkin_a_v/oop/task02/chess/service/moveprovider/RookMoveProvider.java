@@ -21,10 +21,10 @@ public class RookMoveProvider extends AbstractMoveProvider {
 		Tile startTile = tile;
 		Coordinate startCoordinate = tile.getCoordinate();
 
-		propagateInDirection(result, UP, startCoordinate, startTile);
-		propagateInDirection(result, DOWN, startCoordinate, startTile);
-		propagateInDirection(result, LEFT, startCoordinate, startTile);
-		propagateInDirection(result, RIGHT, startCoordinate, startTile);
+		propagateInDirection(result, UP, startCoordinate, startTile.getNeighbors().get(UP));
+		propagateInDirection(result, DOWN, startCoordinate, startTile.getNeighbors().get(DOWN));
+		propagateInDirection(result, LEFT, startCoordinate, startTile.getNeighbors().get(LEFT));
+		propagateInDirection(result, RIGHT, startCoordinate, startTile.getNeighbors().get(RIGHT));
 
 		return result;
 	}

@@ -1,8 +1,8 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller.ChessGame;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller.GameController;
+import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.controller.GameControllerImpl;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.GameConfig;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.Move;
@@ -87,7 +87,7 @@ public class Main {
 	}
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
-		ChessGame game;
+		GameController game = new GameControllerImpl();
 		var gson = new GsonBuilder()
 				.registerTypeAdapter(Piece.class, new PieceSerializer())
 				.registerTypeAdapter(Player.class, new PlayerSerializer())
@@ -95,11 +95,11 @@ public class Main {
 				.create();
 		try {
 			SerialGameConfig config = gson.fromJson(Files.readString(Path.of("board.json")), SerialGameConfig.class);
-			game = new ChessGame(config);
+			game.loadConfig(config);
 		} catch (IOException e) {
 			System.err.println("Произошла ошибка чтения из файла \"board.json\"");
 			GameConfig config = obtainConfig();
-			game = new ChessGame(config);
+			game.loadConfig(config);
 		}
 
 		CommandInvoker invoker = new CommandInvoker(

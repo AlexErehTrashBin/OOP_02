@@ -1,14 +1,11 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.util;
 
 import com.google.gson.*;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.Main;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.piece.*;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.serial.SerialGameConfig;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 
 public class PieceSerializer implements JsonSerializer<Piece>, JsonDeserializer<Piece> {
 	private Map<String, Class<? extends Piece>> map;
@@ -18,7 +15,8 @@ public class PieceSerializer implements JsonSerializer<Piece>, JsonDeserializer<
 	}
 
 	@Override
-	public Piece deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Piece deserialize(JsonElement json, Type typeOfT,
+	                         JsonDeserializationContext context) throws JsonParseException {
 		JsonElement elem = json.getAsJsonObject().get("Piece");
 		JsonObject object = elem.getAsJsonObject();
 		String pieceType = context.deserialize(object.getAsJsonPrimitive("name"), String.class);
@@ -26,7 +24,8 @@ public class PieceSerializer implements JsonSerializer<Piece>, JsonDeserializer<
 	}
 
 	@Override
-	public JsonElement serialize(Piece src, Type typeOfSrc, JsonSerializationContext context) {
+	public JsonElement serialize(Piece src, Type typeOfSrc,
+	                             JsonSerializationContext context) {
 		JsonObject result = new JsonObject();
 		JsonElement elem = null;
 		switch (src.getName()) {

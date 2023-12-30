@@ -1,7 +1,8 @@
 package ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.board;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.Coordinate;
-import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.PieceColor;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.move.Move;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.serial.SerialGameConfig;
 import ru.vsu.cs.ereshkin_a_v.oop.task02.chess.model.team.Team;
@@ -15,16 +16,27 @@ import java.util.*;
 
 public class GraphBoard implements Board {
 	private static final int SIZE = 8;
+	@Getter
+	@Setter
 	private Team currentTeam;
 	private final Team firstTeam;
 	private final Team secondTeam;
+	@Getter
 	private Map<Team, Boolean> checkMap;
+	@Getter
+	@Setter
 	private boolean isFinished;
+	@Getter
 	private Tile upperLeftTile;
+	@Getter
 	private Tile lowerLeftTile;
+	@Getter
 	private Tile upperRightTile;
+	@Getter
 	private Tile lowerRightTile;
+	@Getter
 	private int size;
+	@Getter
 	private final Deque<Move> moves;
 
 	public GraphBoard(Team firstTeam, Team secondTeam) {
@@ -52,48 +64,13 @@ public class GraphBoard implements Board {
 	}
 
 	@Override
-	public void setCurrentTeam(Team team) {
-		currentTeam = team;
-	}
-
-	private Team getTeamByColor(PieceColor color) {
-		if (firstTeam.getColor().equals(color)) return firstTeam;
-		return secondTeam;
-	}
-
-	@Override
-	public Deque<Move> getMoves() {
-		return moves;
-	}
-
-	@Override
-	public boolean isFinished() {
-		return isFinished;
-	}
-
-	@Override
-	public Team getCurrentTeam() {
-		return currentTeam;
-	}
-
-	@Override
 	public Team getOpponentTeam() {
 		return currentTeam == firstTeam ? secondTeam : firstTeam;
 	}
 
 	@Override
-	public Map<Team, Boolean> getCheckMap() {
-		return checkMap;
-	}
-
-	@Override
 	public void setCheckMap(Map<Team, Boolean> map) {
 		checkMap = map;
-	}
-
-	@Override
-	public void setFinished(boolean finished) {
-		isFinished = finished;
 	}
 
 	@Override
@@ -189,30 +166,5 @@ public class GraphBoard implements Board {
 		lowerLeftTile = board[size - 1][0];
 		upperRightTile = board[0][size - 1];
 		lowerRightTile = board[size - 1][size - 1];
-	}
-
-	@Override
-	public Tile getUpperLeftTile() {
-		return upperLeftTile;
-	}
-
-	@Override
-	public Tile getLowerLeftTile() {
-		return lowerLeftTile;
-	}
-
-	@Override
-	public Tile getUpperRightTile() {
-		return upperRightTile;
-	}
-
-	@Override
-	public Tile getLowerRightTile() {
-		return lowerRightTile;
-	}
-
-	@Override
-	public int getSize() {
-		return size;
 	}
 }
